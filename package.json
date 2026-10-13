@@ -3,7 +3,7 @@
   "version": "0.8.0",
   "private": true,
   "type": "module",
-  "description": "LifeBots \u2014 jogo 2D, PWA e base de integra\u00e7\u00e3o Supabase",
+  "description": "LifeBots — jogo 2D, PWA e base de integração Supabase",
   "engines": {
     "node": ">=22.18"
   },
@@ -13,10 +13,14 @@
     "build": "node scripts/build.mjs",
     "test": "node --test tests/*.test.mjs",
     "test:edge": "node --experimental-strip-types --test supabase/tests/*.test.mjs",
+    "test:mobile": "node --test tests/mobile-layout.mjs",
     "check": "node scripts/check.mjs",
     "verify:package": "node scripts/verify-package.mjs",
     "verify:deploy": "node scripts/verify-deploy.mjs",
     "mobile:android": "npm run build && npx cap sync android",
     "mobile:ios": "npm run build && npx cap sync ios"
+  },
+  "devDependencies": {
+    "playwright": "1.56.1"
   }
 }

@@ -15,7 +15,7 @@ export function chatWindowPosition(rect,x,y){return {x:rect.maxX===rect.minX?0:c
 export function createFloatingChat(env){
  const doc=env.document||globalThis.document,win=env.window||globalThis.window,storage=env.storage||globalThis.localStorage,root=env.root||doc.querySelector('#chat-root');
  let preferences=null,accountKey='',drag=null,blockClickUntil=0,rendered='',lastChannel=null;const drafts=new Map();
- function load(){const nextKey=KEY+':'+currentId(env.getState());if(accountKey===nextKey&&preferences)return;accountKey=nextKey;const cfg=socialConfig(env.getState());preferences={mode:cfg.chatStartMinimized?'minimized':'window',position:{x:1,y:1},room:'global'};
+ function load(){const nextKey=KEY+':'+currentId(env.getState());if(accountKey===nextKey&&preferences)return;accountKey=nextKey;const cfg=socialConfig(env.getState());preferences={mode:cfg.chatStartMinimized||(win?.visualViewport?.width||win?.innerWidth||doc.documentElement?.clientWidth||1024)<=760?'minimized':'window',position:{x:1,y:1},room:'global'};
   try{const saved=JSON.parse(storage?.getItem(accountKey)||'null');if(saved&&['closed','minimized','window','maximized'].includes(saved.mode)){preferences.mode=saved.mode;if(saved.position&&Number.isFinite(saved.position.x)&&Number.isFinite(saved.position.y))preferences.position={x:clamp(saved.position.x,0,1),y:clamp(saved.position.y,0,1)};if(['global','market','guild'].includes(saved.room))preferences.room=saved.room;}}catch{}
   drafts.clear();lastChannel=null;rendered='';env.view.setRoom(preferences.room);
  }

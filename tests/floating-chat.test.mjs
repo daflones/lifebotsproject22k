@@ -5,7 +5,7 @@ import * as C from '../src/core.js';
 import {ensureSocial} from '../src/social-core.js';
 import {createSocialView} from '../src/social-view.js';
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function fixture(){const state=C.initialState();ensureSocial(state);let room='global',page='home';const data=new Map(),events=new Map(),windowEvents=new Map(),classes=new Set(),panel={style:{}},root={innerHTML:'',hidden:false,classList:{add:v=>classes.add(v),remove:v=>classes.delete(v)},addEventListener:(n,fn)=>events.set(n,fn),removeEventListener:(n,fn)=>{if(events.get(n)===fn)events.delete(n);},querySelector:selector=>selector==='.chat-float'?panel:null},win={innerWidth:1000,innerHeight:800,addEventListener:(n,fn)=>windowEvents.set(n,fn),removeEventListener:(n,fn)=>{if(windowEvents.get(n)===fn)windowEvents.delete(n);}},doc={documentElement:{},querySelector:()=>null},storage={getItem:k=>data.get(k)||null,setItem:(k,v)=>data.set(k,v)},view={setRoom:r=>room=r,getRoom:()=>room,getChannel:()=>room,roomTitle:()=>room,chatPanel:({draft})=>`<form id="floating-chat-form"><textarea>${escape(draft)}</textarea></form>`};
+function fixture(width=1000){const state=C.initialState();ensureSocial(state);let room='global',page='home';const data=new Map(),events=new Map(),windowEvents=new Map(),classes=new Set(),panel={style:{}},root={innerHTML:'',hidden:false,classList:{add:v=>classes.add(v),remove:v=>classes.delete(v)},addEventListener:(n,fn)=>events.set(n,fn),removeEventListener:(n,fn)=>{if(events.get(n)===fn)events.delete(n);},querySelector:selector=>selector==='.chat-float'?panel:null},win={innerWidth:width,innerHeight:800,addEventListener:(n,fn)=>windowEvents.set(n,fn),removeEventListener:(n,fn)=>{if(windowEvents.get(n)===fn)windowEvents.delete(n);}},doc={documentElement:{},querySelector:()=>null},storage={getItem:k=>data.get(k)||null,setItem:(k,v)=>data.set(k,v)},view={setRoom:r=>room=r,getRoom:()=>room,getChannel:()=>room,roomTitle:()=>room,chatPanel:({draft})=>`<form id="floating-chat-form"><textarea>${escape(draft)}</textarea></form>`};
  const env={getState:()=>state,getPage:()=>page,view,escape,icon:()=>'',root,window:win,document:doc,storage};const chat=createFloatingChat(env);chat.refresh();return {chat,state,root,panel,events,windowEvents,classes,data,win,env,setPage:p=>page=p,emit:(name,event={})=>events.get(name)?.(event)};
 }
 test('janela cabe no celular, mantém a barra inferior livre e se adapta ao teclado',()=>{
@@ -13,6 +13,10 @@ test('janela cabe no celular, mantém a barra inferior livre e se adapta ao tecl
   const r=chatWindowLayout(viewport,mode,{x:2,y:-1});assert.ok(r.x>=viewport.left||!viewport.left);assert.ok(r.y>=(viewport.top||0));assert.ok(r.x+r.width<=(viewport.left||0)+viewport.width);assert.ok(r.y+r.height<=(viewport.top||0)+viewport.height-viewport.bottomReserve);
  }
  const r=chatWindowLayout({width:360,height:740,bottomReserve:80},'window');assert.equal(r.width,340);assert.equal(r.height,360);assert.deepEqual(chatWindowPosition(r,-999,9999),{x:0,y:1});
+});
+test('no celular o chat começa minimizado e respeita a escolha salva de abrir',()=>{
+ const f=fixture(390);assert.equal(f.chat.mode,'minimized');assert.ok(!f.root.innerHTML.includes('textarea'));
+ f.chat.open();const restored=createFloatingChat(f.env);restored.refresh();assert.equal(restored.mode,'window');restored.dispose();f.chat.dispose();
 });
 test('minimizar, maximizar e restaurar preservam posição, canal e rascunho',()=>{
  const f=fixture();assert.match(f.root.innerHTML,/data-chat-mode="window"/);f.chat.setDraft('Texto <a guardar>');f.chat.minimize();assert.match(f.root.innerHTML,/data-chat-mode="minimized"/);assert.ok(!f.root.innerHTML.includes('textarea'));

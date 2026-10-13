@@ -1,0 +1,20 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {mkdtemp,mkdir,writeFile,readFile,rm,access} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {build} from '../scripts/build.mjs';
+test('novo HTML e todos os módulos apontam para uma versão que caches antigos não possuem',async t=>{
+ const root=await mkdtemp(join(tmpdir(),'liferobots-build-'));t.after(()=>rm(root,{recursive:true,force:true}));await mkdir(join(root,'src'));await mkdir(join(root,'dist/assets'),{recursive:true});
+ await writeFile(join(root,'package.json'),JSON.stringify({version:'0.2.0'}));
+ await writeFile(join(root,'src/index.html'),'<link href="./game-styles.css"><script src="./config.js"></script><script type="module" src="./app.js"></script>');
+ await writeFile(join(root,'src/app.js'),"import './core.js';");await writeFile(join(root,'src/core.js'),'export const marker=1;');await writeFile(join(root,'src/config.js'),'window.version=1;');
+ await writeFile(join(root,'src/game-styles.css'),"body{background:url('./assets/hangar.webp')}");
+ await writeFile(join(root,'src/sw.js'),"const CACHE='liferobots-release-__BUILD_HASH__';const VERSION='__BUILD_VERSION__';const SHELL=['./app.js'];");
+ await writeFile(join(root,'dist/assets/marker.txt'),'preserved');
+ const first=await build(root),html=await readFile(join(root,'dist/index.html'),'utf8');assert.ok(!html.includes('src="./app.js"'));assert.ok(html.includes(first.folder+'/app.js'));assert.ok(html.includes('src="./config.js"'));assert.ok(!html.includes(first.folder+'/config.js'));
+ await access(join(root,'dist',first.folder,'core.js'));const css=await readFile(join(root,'dist',first.folder,'game-styles.css'),'utf8');assert.ok(css.includes('../../assets/hangar.webp'));
+ const worker=await readFile(join(root,'dist/sw.js'),'utf8');assert.ok(worker.includes(first.release));assert.ok(worker.includes(first.folder+'/core.js'));assert.ok(!worker.includes('__BUILD_'));assert.ok(worker.includes('"./config.js"'));
+ await writeFile(join(root,'src/core.js'),'export const marker=2;');const second=await build(root);assert.notEqual(first.release,second.release);
+ assert.equal(await readFile(join(root,'dist/assets/marker.txt'),'utf8'),'preserved');assert.equal(JSON.parse(await readFile(join(root,'dist/version.json'),'utf8')).version,'0.2.0');
+});

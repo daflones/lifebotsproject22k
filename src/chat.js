@@ -1,0 +1,12 @@
+import * as C from './core.js';
+import {requireSocialDemo,socialConfig,currentId,membership,profileOf} from './social-core.js';
+import {adminAudit} from './admin-operations.js';
+export function canReadRoom(state,room,id=currentId(state)){const own=membership(state,id);return ['global','market'].includes(room)||!!own&&room==='guild:'+own.guild.id;}
+export function sendMessage(state,room,text,now=Date.now()){
+ requireSocialDemo(state);const cfg=socialConfig(state),id=currentId(state),message=String(text||'').trim();if(!cfg.chatEnabled)throw new Error('O chat está pausado.');if(!canReadRoom(state,room))throw new Error('Entre nesta guilda para acessar o canal.');if((state.social.muted[id]||0)>now)throw new Error('O envio de mensagens está temporariamente suspenso.');if(!message||message.length>cfg.chatMaxLength)throw new Error('Mensagem vazia ou acima do limite.');
+ const lastAt=state.social.chatLastSent?.[id]??state.social.messages.find(m=>m.authorId===id)?.at;if(lastAt!=null&&now-lastAt<cfg.chatCooldownSeconds*1000)throw new Error('Aguarde alguns segundos antes de enviar outra mensagem.');
+ const entry={id:C.uuid(),room,authorId:id,name:profileOf(state,id).name,text:message,at:now,example:false};state.social.messages.unshift(entry);state.social.chatLastSent ||= {};state.social.chatLastSent[id]=now;
+ const roomMessages=state.social.messages.filter(m=>m.room===room);if(roomMessages.length>cfg.chatHistoryLimit){const remove=new Set(roomMessages.slice(cfg.chatHistoryLimit).map(m=>m.id));state.social.messages=state.social.messages.filter(m=>!remove.has(m.id));}return entry;
+}
+export function moderateMessage(state,id){requireSocialDemo(state);const message=state.social.messages.find(m=>m.id===id);if(!message)throw new Error('Mensagem não encontrada.');state.social.messages=state.social.messages.filter(m=>m.id!==id);adminAudit(state,'chat_remove',message.authorId,message,{removed:true},'Mensagem removida no painel');}
+export function mutePilot(state,id,minutes,now=Date.now()){requireSocialDemo(state);if(!profileOf(state,id)||!Number.isSafeInteger(minutes)||minutes<0||minutes>43200)throw new Error('Selecione um piloto e um período de 0 a 43200 minutos.');const before=state.social.muted[id]||0;state.social.muted[id]=minutes?now+minutes*60000:0;adminAudit(state,'chat_mute',id,{until:before},{until:state.social.muted[id]},minutes?'Envio suspenso por '+minutes+' minutos':'Envio liberado');}

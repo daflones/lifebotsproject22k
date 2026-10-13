@@ -1,0 +1,14 @@
+node_modules/
+.env
+.env.*
+!.env.example
+supabase/.temp/
+.sites/
+.openai/
+.DS_Store
+*.log
+android/
+ios/
+.backend-secrets
+*.zip
+*.tar.gz

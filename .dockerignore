@@ -1,0 +1,15 @@
+# Apenas os arquivos utilizados pelo build do frontend.
+**
+!Dockerfile
+!.dockerignore
+!package.json
+!src/
+!src/**
+!scripts/
+!scripts/build.mjs
+!dist/
+!dist/assets/
+!dist/assets/**
+!deploy/
+!deploy/nginx.conf
+!deploy/40-lifebots-config.sh

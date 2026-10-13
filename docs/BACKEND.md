@@ -56,7 +56,7 @@ Headers `x-mercosulpay-timestamp`, `x-mercosulpay-signature`, `x-mercosulpay-eve
 
 ## Instalação e manutenção
 
-Há 15 versões de migration. O checkpoint 010 contém schema consolidado recuperado do catálogo real dos checkpoints 010–013; 011–013 preservam os números de versão. A ordem das funções foi corrigida e a instalação foi ensaiada no PostgreSQL em schema isolado dentro de transação revertida. Em produção, sempre acrescente novas migrations; não reaplique versões já registradas.
+Há 16 versões de migration. A migration 016 adiciona filtros explícitos de namespace aos UPDATEs administrativos, mantendo a proteção contra operações sem WHERE. O checkpoint 010 contém schema consolidado recuperado do catálogo real dos checkpoints 010–013; 011–013 preservam os números de versão. A ordem das funções foi corrigida e a instalação foi ensaiada no PostgreSQL em schema isolado dentro de transação revertida. Em produção, sempre acrescente novas migrations; não reaplique versões já registradas.
 
 Segredos: `MERCOSULPAY_API_KEY`, `MERCOSULPAY_WEBHOOK_SECRET`, `DAILY_JOB_SECRET`, `ALLOWED_ORIGINS`; URL/anon/service role são provisionados nas funções pelo Supabase. Use um arquivo privado fora do checkout ou o dashboard para configurar segredos. `supabase/functions/.env.example` tem somente nomes e valores fictícios.
 

@@ -35,7 +35,7 @@ Execute `VALIDAR-PROJETO.bat` no Windows para sintaxe, testes, build e verifica�
 
 ## Backend e pagamentos
 
-O projeto Supabase é `edzgczsnxlkhkpovtspg`. As 15 migrations foram aplicadas e as quatro Edge Functions estão publicadas: `game-api`, `daily-settlement`, `payment-webhook` e `mercosulpay-webhook`. Um job a cada cinco minutos processa lotes de produção/comissões do dia concluído, expirações e a fila de pagamentos.
+O projeto Supabase é `edzgczsnxlkhkpovtspg`. As 16 migrations foram aplicadas e as quatro Edge Functions estão publicadas: `game-api`, `daily-settlement`, `payment-webhook` e `mercosulpay-webhook`. Um job a cada cinco minutos processa lotes de produção/comissões do dia concluído, expirações e a fila de pagamentos.
 
 O adapter MercosulPay implementa criação Pix, cotação congelada, assinatura HMAC, reconciliação, reserva de saque, revisão administrativa/automática e proteção contra repetição. **Pagamentos bancários permanecem pausados no painel até a homologação com o gateway.** A verificação desta entrega não criou cobrança nem realizou saque real. O administrador pode controlar a ativação em Admin → Economia; configurar uma chave não confirma um pagamento.
 

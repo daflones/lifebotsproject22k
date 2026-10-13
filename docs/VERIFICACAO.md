@@ -1,5 +1,14 @@
 # Verificação LifeBots 0.8.0 — entrega ZIP, 13/10/2026
 
+## Correção administrativa e inicialização Auth — 13/10/2026
+
+- Reproduzido HTTP 400 / SQLSTATE 21000 em `lr_admin_set_payments`: UPDATE da revisão do mundo sem WHERE era recusado pela proteção do banco.
+- Migration 016 aplicada e registrada: filtros explícitos nas funções de política bancária, salvar conteúdo e excluir conteúdo. Política bancária atualiza somente o mundo real; catálogo compartilhado invalida os dois namespaces existentes. Proteções, permissões e checagens de admin mantidas.
+- A mesma RPC voltou HTTP 204, mantendo a política de pagamentos inalterada. `supabase/tests/admin-safe-updates.sql` aprovou as três operações, escopo de revisão, recusa de ator não autorizado e ACLs, com ROLLBACK e sem excluir conteúdo existente.
+- Frontend usa uma única promessa de inicialização Supabase para chamadas concorrentes; falha de inicialização permite nova tentativa. Acrescentada a meta tag `mobile-web-app-capable`, preservando suporte Apple.
+- `beforeinstallprompt.preventDefault()` permanece intencional: o botão Instalar chama `prompt()` após interação do usuário; o aviso de banner não é falha da API.
+- Sintaxe, 145 testes do projeto, 14 testes Edge, build `08c703679a657cf6` e verificação de pacote com 16 migrations aprovados. Nenhuma cobrança ou saque real criado nesta correção.
+
 ## Revisão de preparação para produção — 13/10/2026
 
 - `npm run check`, 141 testes do projeto e 14 testes Edge aprovados; build `7b827a756c80010c` e verificação do pacote aprovados.

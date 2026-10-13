@@ -6,10 +6,10 @@ Versão 0.8.0, revisada em 13/10/2026. Este pacote contém o projeto recuperado 
 
 | Item | Estado |
 | --- | --- |
-| Jogo, arena, campanha, chat, guildas, mercado e admin | Implementados; 144 testes locais existentes aprovados |
+| Jogo, arena, campanha, chat, guildas, mercado e admin | Implementados; 159 testes locais aprovados |
 | Conteúdo | 15 robôs, seis temporadas, 54 capítulos, 540 poses e 15 temas de áudio |
 | Artes e áudio | 157 arquivos originais/otimizados em `dist/assets/` |
-| Supabase | 15 migrations e quatro Edge Functions; as quatro URLs publicadas responderam às verificações públicas |
+| Supabase | 16 migrations e quatro Edge Functions; as quatro URLs publicadas responderam às verificações públicas |
 | Build e deploy | Dockerfile, Nginx, health check `/healthz`, `.dockerignore` e verificador de distribuição |
 | Git | Arquivos completos para enviar o jogo; o ZIP não contém `.git` nem credenciais privadas |
 

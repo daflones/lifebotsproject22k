@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {readFile,mkdtemp,rm} from 'node:fs/promises';
+import {readFile,readdir,mkdtemp,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {spawnSync} from 'node:child_process';
@@ -9,7 +9,7 @@ import * as C from '../src/core.js';
 import {createLoginView} from '../src/login-view.js';
 import {createAdminOperations} from '../src/admin-operations.js';
 
-const config={mode:'server',serverAvailable:true,supabaseUrl:'https://example.supabase.co',supabasePublishableKey:'public-key',supabaseJsUrl:'data:text/javascript,export const createClient=()=>globalThis.productionClient'};
+const config={mode:'server',serverAvailable:true,supabaseUrl:'https://example.supabase.co',supabasePublishableKey:'public-key',supabaseJsUrl:'data:text/javascript,export const createClient=()=>{globalThis.productionClientCount=(globalThis.productionClientCount||0)+1;return globalThis.productionClient;}'};
 globalThis.window={LIFEBOTS_CONFIG:config};
 globalThis.localStorage={getItem:()=> 'demo'};
 const calls=[];
@@ -21,6 +21,37 @@ const env={getState:()=>state,escape:esc,icon:()=>'',input:()=>'',textarea:()=>'
 
 const readConfig=await readFile(new URL('../src/config.js',import.meta.url),'utf8');
 const readApi=await readFile(new URL('../src/api.js',import.meta.url),'utf8');
+
+test('inicialização concorrente reutiliza uma única instância Supabase',async()=>{
+ const clients=await Promise.all([API.supabase(),API.supabase(),API.supabase()]);
+ assert.equal(productionClientCount,1);assert.ok(clients.every(client=>client===productionClient));
+});
+
+test('falha de inicialização permite nova tentativa sem manter um cliente inválido',async t=>{
+ const previous=config.supabaseJsUrl;t.after(()=>config.supabaseJsUrl=previous);
+ config.supabaseJsUrl='data:text/javascript,export const createClient=()=>{globalThis.retryClientCount=(globalThis.retryClientCount||0)+1;if(globalThis.retryClientCount===1)throw new Error("SDK indisponível");return globalThis.productionClient;}';
+ const retry=await import('../src/api.js?retry-init');
+ await assert.rejects(retry.supabase(),/SDK indisponível/);assert.equal(await retry.supabase(),productionClient);assert.equal(retryClientCount,2);
+});
+
+test('PWA publica a meta tag atual sem retirar suporte ao Safari',async()=>{
+ const html=await readFile(new URL('../src/index.html',import.meta.url),'utf8');
+ assert.match(html,/<meta name="mobile-web-app-capable" content="yes">/);
+ assert.match(html,/<meta name="apple-mobile-web-app-capable" content="yes">/);
+});
+
+test('funções administrativas atualizam apenas namespaces explícitos',async()=>{
+ const definitions=new Map(),directory=new URL('../supabase/migrations/',import.meta.url);
+ for(const file of (await readdir(directory)).filter(name=>name.endsWith('.sql')).sort()){
+  const sql=await readFile(new URL(file,directory),'utf8');
+  for(const match of sql.matchAll(/create(?:\s+or\s+replace)?\s+function\s+public\.(lr_admin_save_content|lr_admin_set_payments|lr_admin_delete_content)\s*\([\s\S]*?\bas\s+(\$[a-z0-9_]*\$)([\s\S]*?)\2/gi))definitions.set(match[1],match[3]);
+ }
+ for(const name of ['lr_admin_save_content','lr_admin_set_payments','lr_admin_delete_content']){
+  const body=definitions.get(name);assert.ok(body,'Função ausente: '+name);
+  const updates=[...body.matchAll(/update\s+public\.lr_game_world\s+set[\s\S]*?;/gi)];assert.equal(updates.length,1);
+  assert.match(updates[0][0],/\bwhere\s+mode\s*(?:in\s*\(|=\s*'real')/i,'UPDATE sem escopo em '+name);
+ }
+});
 
 test('produção ignora preferência demo antiga e indisponibilidade não cria uma conta local',()=>{
  assert.equal(API.isDemo,false);

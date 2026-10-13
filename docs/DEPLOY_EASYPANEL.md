@@ -59,9 +59,9 @@ Use origens exatas, sem barra final, caminho ou `#login`. Se usar `www` e sem `w
 
 ## Conferir banco e administrador
 
-As migrations 001–015 foram instaladas na implementação anterior. Esta revisão verificou as quatro funções remotamente sem alterar contas/banco, mas não repetiu a inspeção autenticada de migrations, cron e Vault. Rode `supabase migration list` ou consulte `supabase/tests/preflight-production.sql` no SQL Editor do projeto correto.
+As migrations 001–016 estão aplicadas, incluindo a correção dos UPDATEs administrativos sem filtro. Esta revisão verificou as quatro funções remotamente sem alterar contas/banco, mas não repetiu a inspeção autenticada de migrations, cron e Vault. Rode `supabase migration list` ou consulte `supabase/tests/preflight-production.sql` no SQL Editor do projeto correto.
 
-O arquivo preflight faz somente consultas. Confira 15 versões, catálogo ativo, RLS, funções privadas, job único/ativo e pagamentos pausados até homologação. Ele não imprime o segredo do Vault, e-mails ou dados Pix. Não execute `db reset` para validar uma instalação já publicada.
+O arquivo preflight faz somente consultas. Confira 16 versões, catálogo ativo, RLS, funções privadas, job único/ativo e pagamentos pausados até homologação. Ele não imprime o segredo do Vault, e-mails ou dados Pix. Não execute `db reset` para validar uma instalação já publicada.
 
 Cadastre sua conta pelo jogo e conceda admin como explicado em `CONEXAO_SUPABASE.md`. O primeiro usuário não vira administrador automaticamente. Confirme que uma conta comum não recebe acesso administrativo.
 

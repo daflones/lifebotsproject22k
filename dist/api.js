@@ -1,12 +1,12 @@
 const config=window.LIFEBOTS_CONFIG;
 export const isDemo=config.mode==='demo'&&config.allowDemo===true;
-let client;
+let clientPromise;
 export async function publicAppearance(){const r=await fetch(config.supabaseUrl+'/functions/v1/game-api',{method:'POST',headers:{'Content-Type':'application/json',apikey:config.supabasePublishableKey},body:JSON.stringify({action:'public_config'}),signal:AbortSignal.timeout(12000)});if(!r.ok)throw new Error('Não foi possível carregar o visual do jogo.');return (await r.json()).data;}
 export async function supabase(){
  if(isDemo)return null;
  if(!config.supabaseUrl||!config.supabasePublishableKey)throw new Error('Configure a URL e a chave pública do Supabase em config.js.');
- if(!client){const sdk=await import(config.supabaseJsUrl);client=sdk.createClient(config.supabaseUrl,config.supabasePublishableKey);}
- return client;
+ if(!clientPromise)clientPromise=import(config.supabaseJsUrl).then(sdk=>sdk.createClient(config.supabaseUrl,config.supabasePublishableKey)).catch(error=>{clientPromise=null;throw error;});
+ return clientPromise;
 }
 export async function signIn(email,password){const c=await supabase();const {data,error}=await c.auth.signInWithPassword({email,password});if(error)throw error;return data;}
 export async function signUp(email,password,name,whatsapp,referralCode='',shareWhatsApp=false){const c=await supabase();const {data,error}=await c.auth.signUp({email,password,options:{data:{name,display_name:name,whatsapp,referral_code:referralCode||null,share_team_whatsapp:shareWhatsApp},emailRedirectTo:window.location.origin+'/#login'}});if(error)throw error;return data;}

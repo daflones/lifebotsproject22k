@@ -3,7 +3,7 @@
 
 select version, name
 from supabase_migrations.schema_migrations
-where version between '20261011000100' and '20261013001500'
+where version between '20261011000100' and '20261013001600'
 order by version;
 
 select 'catalogo_ativo' as check_name, count(*) as quantity

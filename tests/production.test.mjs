@@ -93,9 +93,16 @@ test('interface conectada não oferece simulações e retenta pagamentos com a m
   location.hash='#'+route;listeners.hashchange();const html=elements.get('#app').innerHTML;
   assert.ok(!/PRÉVIA|de teste|Simular 1 dia|LifeRobots/.test(html),'Texto de demonstração em '+route);
  }
+ await click('mobile-menu');assert.match(elements.get('#modal-root').innerHTML,/data-page="admin"/);
+ state.profile.role='user';state.profile.isAdmin=false;location.hash='#home';listeners.hashchange();await click('mobile-menu');assert.doesNotMatch(elements.get('#modal-root').innerHTML,/data-page="admin"|Painel administrativo/);
+ location.hash='#admin';listeners.hashchange();assert.match(elements.get('#app').innerHTML,/Acesso restrito aos administradores/);assert.doesNotMatch(elements.get('#app').innerHTML,/admin-studio|admin-economy/);
+ state.profile.role='admin';listeners.hashchange();
+ location.hash='#wallet';listeners.hashchange();assert.doesNotMatch(elements.get('#app').innerHTML,/MercosulPay|Gateway:/i);
+ await click('withdraw');assert.doesNotMatch(elements.get('#modal-root').innerHTML,/MercosulPay/i);
+ location.hash='#admin';listeners.hashchange();
  await click('admin-tab','activity');assert.ok(!/data-a="reset-demo"|data-a="simulate-day"/.test(elements.get('#app').innerHTML),elements.get('#app').innerHTML.match(/.{0,100}data-a="reset-demo".{0,100}/)?.[0]);
  await click('deposit');const modal=elements.get('#modal-root').innerHTML;
- assert.ok(!/de teste|fictícia|Simular depósito/.test(modal));
+ assert.ok(!/de teste|fictícia|Simular depósito|MercosulPay/i.test(modal));
  const requestKey=modal.match(/data-request-key="([^"]+)"/)[1],submit={disabled:false},form={id:'money-form',dataset:{kind:'deposit',requestKey},fields:{amount:'20'},querySelector:()=>submit};
  for(let attempt=0;attempt<2;attempt++)await listeners.submit({preventDefault(){},target:form});
  const payments=calls.filter(body=>body.action==='deposit').slice(-2);assert.equal(payments.length,2);assert.equal(payments[0].idempotency_key,payments[1].idempotency_key);assert.equal(payments[0].idempotency_key,requestKey);assert.equal(submit.disabled,false);

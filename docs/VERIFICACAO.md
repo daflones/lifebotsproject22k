@@ -2,13 +2,14 @@
 
 ## Revisão de preparação para produção — 13/10/2026
 
-- `npm run check`, 141 testes do projeto e 14 testes Edge aprovados; build `79021caf727f9196` e verificação do pacote aprovados.
+- `npm run check`, 141 testes do projeto e 14 testes Edge aprovados; build `7b827a756c80010c` e verificação do pacote aprovados.
 - Modo publicado exclusivamente conectado, sem seletor de demonstração nem simulação de saldo por preferência antiga; marca LifeBots padronizada.
 - `.env.example` contém apenas URL Supabase e chave publicável. O container aplica essas variáveis ao iniciar e serve `/config.js` sem cache persistente.
 - Correções MercosulPay: idempotência estável no formulário, recusas definitivas distintas de falhas incertas, retentativa limitada para erros transitórios documentados e normalização de chaves Pix. Conciliação usa `total_debit`, não `net_amount`.
 - Quatro Edge Functions atualizadas pelo CLI via Management API, preservando banco, cron e autenticação das funções.
 - Site URL/redirects e CORS ajustados para https://lifebots.com.br; dez verificações públicas do Supabase aprovadas. Credenciais MercosulPay existentes conferidas por digest e consulta de saldo autorizada (HTTP 200), sem expor dados financeiros.
-- Consulta remota confirmou 15 migrations, cron ativo com execuções bem-sucedidas, zero admins e pagamentos desativados. O proprietário informou que ainda vai cadastrar sua conta; concessão de admin e ativação financeira permanecem pendentes.
+- Consulta remota confirmou 15 migrations, cron ativo e pagamentos desativados. Execuções recentes em `lr_job_runs` registraram processamento sem falhas. Após o cadastro, a conta indicada pelo proprietário foi encontrada confirmada e ativa e recebeu papel de admin; ativação financeira e validação de pagamentos reais permanecem pendentes.
+- Menu e atalho administrativo condicionados ao papel de admin; acesso direto à tela bloqueado para contas comuns. Nome do gateway retirado da carteira e dos formulários Pix/saque, mantendo a integração no backend.
 - O domínio retornou `ENOTFOUND` nesta máquina. DNS, deploy EasyPanel e validação de cobrança/saque reais continuam pendentes; nenhuma operação bancária foi criada.
 - Docker Desktop instalado, mas daemon indisponível. Script de configuração runtime e frontend HTTP local verificados; imagem completa ainda não executada neste ambiente.
 

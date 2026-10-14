@@ -38,6 +38,7 @@
 </script>
 </head>
 <body>
+<div class="lp-vfx" aria-hidden="true"></div>
 <nav class="lp-nav">
   <a class="lp-brand" href="/lp"><img src="/assets/game-mark.png" alt="LifeBots"><span>LifeBots<small data-i18n="tagline">UMA NOVA ERA</small></span></a>
   <div class="lp-nav-right">
@@ -51,6 +52,12 @@
 
 <header class="lp-hero">
   <div class="lp-hero-bg" style="background-image:url('/assets/sector-space.webp')"></div>
+  <div class="lp-hud-bar lp-reveal">
+    <span class="lp-hud-live" data-i18n="hud.online">Online</span>
+    <span><img src="/assets/game-mark.png" alt=""><b data-i18n="hud.pilot">Piloto · NV. 1</b></span>
+    <span><img src="/assets/lifecoin.png" alt="LC"><b>300 LC</b><i data-i18n="hud.bonus">bônus de entrada</i></span>
+    <span><img src="/assets/robotcoin.png" alt="RC"><b data-i18n="hud.rc">Produção diária</b></span>
+  </div>
   <div class="lp-hero-grid">
     <div class="lp-hero-copy lp-reveal">
       <span class="lp-eyebrow" data-i18n="hero.eyebrow">Jogo de coleção, produção e conquista</span>
@@ -60,6 +67,7 @@
         <a class="lp-btn lp-btn-accent lp-btn-lg" href="/#signup" data-i18n="hero.cta">Começar agora</a>
         <a class="lp-btn lp-btn-ghost lp-btn-lg" href="#como-funciona" data-i18n="hero.cta2">Ver como funciona</a>
       </div>
+      <div class="lp-hero-start" data-i18n="hero.start">▸ pressione start — sua equipe aguarda</div>
       <div class="lp-hero-chips">
         <span class="lp-chip"><b>15</b> <i data-i18n="hero.chip1">robôs colecionáveis</i></span>
         <span class="lp-chip"><b>300 LC</b> <i data-i18n="hero.chip2">bônus de boas-vindas</i></span>
@@ -87,19 +95,19 @@
       <button class="lp-step-tab" data-step="3"><b>04</b><span data-i18n="steps.t4">Converta e saque</span></button>
     </div>
     <div class="lp-steps-panels">
-      <div class="lp-step-panel active lp-reveal" data-panel="0">
+      <div class="lp-step-panel lp-hud-panel active lp-reveal" data-panel="0">
         <div class="lp-step-media"><img src="/assets/hangar.webp" alt="Hangar"></div>
         <div class="lp-step-text"><h3 data-i18n="steps.h1">Sua oficina, seus robôs</h3><p data-i18n="steps.p1">Escolha entre exploradores, atacantes e guardiões. Cada robô tem prazo de vida, produção diária e limite de usos próprios — e, ao expirar, o valor de aquisição retorna em LifeCoins.</p><div class="lp-step-stats"><span><b>LC</b><i data-i18n="steps.s1a">moeda de aquisição</i></span><span><b>100%</b><i data-i18n="steps.s1b">valor de retorno ao expirar</i></span></div></div>
       </div>
-      <div class="lp-step-panel lp-reveal" data-panel="1">
+      <div class="lp-step-panel lp-hud-panel lp-reveal" data-panel="1">
         <div class="lp-step-media"><img src="/assets/quantum-reactor.webp" alt="Produção"></div>
         <div class="lp-step-text"><h3 data-i18n="steps.h2">Rendimentos enquanto você vive</h3><p data-i18n="steps.p2">Robôs ativos geram RobotCoins a cada dia, automaticamente. Você acompanha a produção da equipe no hangar e coleta quando quiser — quanto melhor o robô e os equipamentos, maior a produção.</p><div class="lp-step-stats"><span><b id="lp-daily-demo">30</b><i>RC/dia</i></span><span><img src="/assets/robotcoin.png" alt=""><i data-i18n="steps.s2b">produção contínua</i></span></div></div>
       </div>
-      <div class="lp-step-panel lp-reveal" data-panel="2">
+      <div class="lp-step-panel lp-hud-panel lp-reveal" data-panel="2">
         <div class="lp-step-media"><img src="/assets/battle-aurora.webp" alt="Arena"></div>
         <div class="lp-step-text"><h3 data-i18n="steps.h3">Arena e aventura</h3><p data-i18n="steps.p3">Dispute batalhas PvP por turnos contra jogadores reais e explore capítulos do modo história com recompensas únicas. Vitórias na arena somam RobotCoins ao seu saldo.</p><div class="lp-step-stats"><span><b>4×</b><i data-i18n="steps.s3a">batalhas grátis/dia</i></span><span><b>+80 RC</b><i data-i18n="steps.s3b">por vitória</i></span></div></div>
       </div>
-      <div class="lp-step-panel lp-reveal" data-panel="3">
+      <div class="lp-step-panel lp-hud-panel lp-reveal" data-panel="3">
         <div class="lp-step-media"><img src="/assets/trade-terminal.webp" alt="Carteira"></div>
         <div class="lp-step-text"><h3 data-i18n="steps.h4">Carteira transparente</h3><p data-i18n="steps.p4">Acompanhe saldos em LifeCoins e RobotCoins com estimativa em reais. Converta entre moedas pela cotação vigente e solicite saque via Pix direto na carteira.</p><div class="lp-step-stats"><span><b>Pix</b><i data-i18n="steps.s4a">depósito e saque</i></span><span><b>LC ⇄ RC</b><i data-i18n="steps.s4b">conversão interna</i></span></div></div>
       </div>
@@ -112,7 +120,7 @@
   <h2 data-i18n="robots.h2">Quinze modelos. Três classes. Cada um com sua produção.</h2>
   <div class="lp-robot-showcase">
     <div class="lp-robot-rail" id="lp-robot-rail"></div>
-    <div class="lp-robot-detail lp-reveal" id="lp-robot-detail"></div>
+    <div class="lp-robot-detail lp-hud-panel lp-reveal" id="lp-robot-detail"></div>
   </div>
 </section>
 
@@ -120,7 +128,7 @@
   <span class="lp-eyebrow" data-i18n="sim.eyebrow">Simulador de rendimentos</span>
   <h2 data-i18n="sim.h2">Veja quanto uma equipe pode produzir.</h2>
   <p class="lp-section-sub" data-i18n="sim.sub">Simulação ilustrativa com os valores reais configurados no jogo.</p>
-  <div class="lp-sim lp-reveal">
+  <div class="lp-sim lp-hud-panel lp-reveal">
     <div class="lp-sim-controls">
       <label data-i18n="sim.pick">Escolha o robô</label>
       <div class="lp-sim-robots" id="lp-sim-robots"></div>
@@ -140,7 +148,7 @@
 <section class="lp-section" id="economia">
   <span class="lp-eyebrow" data-i18n="eco.eyebrow">A economia</span>
   <h2 data-i18n="eco.h2">Duas moedas, um ciclo completo.</h2>
-  <div class="lp-eco lp-reveal">
+  <div class="lp-eco lp-hud-panel lp-reveal">
     <svg class="lp-eco-flow" viewBox="0 0 900 260" aria-hidden="true">
       <defs><linearGradient id="lpGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#bfa46c"/><stop offset="1" stop-color="#5c9379"/></linearGradient></defs>
       <path class="lp-flow-path" d="M120 130 C 240 40, 320 40, 430 110" fill="none" stroke="url(#lpGrad)" stroke-width="2" stroke-dasharray="6 8"/>
@@ -174,7 +182,7 @@
   <div class="lp-guild-grid">
     <div class="lp-map lp-reveal" id="lp-map"></div>
     <div class="lp-guild-side">
-      <div class="lp-guild-score lp-reveal">
+      <div class="lp-guild-score lp-hud-panel lp-reveal">
         <span class="lp-eyebrow" data-i18n="guild.score">Placar da demonstração</span>
         <div class="lp-score-row"><b id="lp-score-you">0</b><span data-i18n="guild.you">sua contribuição</span></div>
         <div class="lp-score-bar"><i id="lp-score-bar"></i></div>
@@ -191,7 +199,7 @@
 </section>
 
 <section class="lp-final">
-  <div class="lp-final-card lp-reveal">
+  <div class="lp-final-card lp-hud-panel lp-reveal">
     <img class="lp-final-guide" src="/assets/nexa-guide.webp" alt="NEXA">
     <span class="lp-eyebrow" data-i18n="final.eyebrow">Pronto para despertar?</span>
     <h2 data-i18n="final.h2">Sua primeira faísca está esperando no hangar.</h2>

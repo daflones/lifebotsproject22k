@@ -4,6 +4,7 @@ import * as C from '../src/core.js';
 import * as G from '../src/guilds.js';
 import * as T from '../src/trading.js';
 import {ensureSocial,accountOf,membership,currentId,socialConfig,saveSocialSettings,validateSocial,redeemCoupon,adminSaveCoupon,adminDeleteCoupon,couponStatus} from '../src/social-core.js';
+import {ensureDemoAdmin,deleteDemoUser} from '../src/admin-operations.js';
 import {canReadRoom,sendMessage,moderateMessage,mutePilot} from '../src/chat.js';
 const NOW=Date.now();
 function state(){const s=C.initialState(NOW);ensureSocial(s,NOW);return s;}
@@ -106,4 +107,15 @@ test('whatsapp da comunidade é configurável, exige https e anúncio é boolean
  const s=state(),cfg=socialConfig(s);assert.ok(cfg.whatsappLink.includes('chat.whatsapp.com'));assert.equal(cfg.whatsappPromo,false);
  assert.throws(()=>validateSocial({...cfg,whatsappLink:'javascript:alert(1)'}),/URL|https/);assert.throws(()=>validateSocial({...cfg,whatsappLink:'http://inseguro.test'}),/https/);assert.throws(()=>validateSocial({...cfg,whatsappPromo:'yes'}),/social/);
  validateSocial({...cfg,whatsappLink:'',whatsappPromo:true});
+});
+
+test('demo: exclusão de piloto remove conta e limpa vínculos do mundo',()=>{
+ const s=state();ensureDemoAdmin(s);const victim=s.adminAccounts[0].profile.id,name=s.adminAccounts[0].profile.name;
+ s.social.guilds=[{id:'g1',name:'G',tag:'G',founderId:victim,members:[{userId:victim,role:'leader'},{userId:s.profile.id,role:'member'}]}];
+ s.social.listings=[{id:'l1',sellerId:victim,status:'open'}];s.social.queue=[{userId:victim}];
+ const r=deleteDemoUser(s,victim);assert.equal(r.name,name);
+ assert.equal(s.adminAccounts.some(a=>a.profile.id===victim),false);
+ assert.equal(s.social.guilds[0].members.length,1);assert.equal(s.social.listings[0].status,'cancelled');assert.equal(s.social.queue.length,0);
+ assert.equal(s.adminAudit[0].action,'user_delete');
+ assert.throws(()=>deleteDemoUser(s,s.profile.id),/inválido/);assert.throws(()=>deleteDemoUser(s,'inexistente'),/encontrado/);
 });

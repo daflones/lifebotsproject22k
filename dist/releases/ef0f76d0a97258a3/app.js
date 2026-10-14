@@ -296,6 +296,7 @@ document.addEventListener('click',async event=>{const target=event.target.closes
  case 'admin-tab':
 adminTab=id;render();break;
  case 'admin-user':adminOperations.openUser(id);break;
+ case 'admin-user-delete':adminOperations.deleteUser(id);break;
  case 'admin-balance':adminOperations.balance(id);break;
  case 'admin-owned-robot':adminOperations.ownedRobot(target.dataset.user,id);break;
  case 'admin-withdrawal-review':adminOperations.review(id,target.dataset.approve==='true');break;

@@ -522,6 +522,16 @@ const TABLE=[
 ['Escolha uma melhoria do catálogo.','Choose an upgrade from the catalog.','Elige una mejora del catálogo.','Выберите улучшение из каталога.','カタログから強化を選んでください。'],
 ['Já existe um cupom com este código.','A coupon with this code already exists.','Ya existe un cupón con este código.','Купон с таким кодом уже существует.','このコードのクーポンは既に存在します。'],
 ['Link da comunidade inválido: use uma URL https.','Invalid community link: use an https URL.','Enlace de comunidad inválido: usa una URL https.','Недействительная ссылка сообщества: используйте URL https.','コミュニティリンクが無効です：https URLを使用してください。'],
+['Excluir piloto','Delete pilot','Eliminar piloto','Удалить пилота','パイロットを削除'],
+['EXCLUSÃO DEFINITIVA','PERMANENT DELETION','ELIMINACIÓN DEFINITIVA','БЕЗВОЗВРАТНОЕ УДАЛЕНИЕ','完全削除'],
+['A conta, os robôs, os saldos e o acesso do piloto serão removidos pelo servidor. Convidados diretos ficam sem indicador e o histórico financeiro auditável é preservado no registro administrativo. Digite','The account, robots, balances and access of the pilot will be removed by the server. Direct referrals lose their referrer and the auditable financial record is preserved in the admin log. Type','La cuenta, los robots, los saldos y el acceso del piloto serán eliminados por el servidor. Los invitados directos quedan sin referente y el historial financiero auditable se conserva en el registro administrativo. Escribe','Аккаунт, роботы, балансы и доступ пилота будут удалены сервером. Прямые рефералы останутся без пригласившего, аудируемая финансовая история сохраняется в журнале. Введите','パイロットのアカウント・ロボット・残高・アクセスがサーバーから削除されます。直下の紹介者は紹介元を失い、監査可能な履歴は管理ログに残ります。確認のため'],
+['para confirmar.','to confirm.','para confirmar.','для подтверждения.','を入力してください。'],
+['Nome do piloto','Pilot name','Nombre del piloto','Имя пилота','パイロット名'],
+['Motivo (opcional)','Reason (optional)','Motivo (opcional)','Причина (необязательно)','理由（任意）'],
+['Excluir piloto permanentemente','Delete pilot permanently','Eliminar piloto permanentemente','Удалить пилота навсегда','パイロットを完全に削除'],
+['Digite o nome do piloto exatamente como exibido.','Type the pilot name exactly as shown.','Escribe el nombre del piloto exactamente como se muestra.','Введите имя пилота точно как показано.','表示されているパイロット名を正確に入力してください。'],
+['Piloto excluído.','Pilot deleted.','Piloto eliminado.','Пилот удалён.','パイロットを削除しました。'],
+['Não é possível excluir um administrador.','Cannot delete an administrator.','No se puede eliminar un administrador.','Нельзя удалить администратора.','管理者は削除できません。'],
 ];
 const DICT={};
 for(const locale of LOCALES.slice(1)){const i=LOCALES.indexOf(locale);DICT[locale]={};for(const row of EXTRA_TABLE)DICT[locale][row[0]]=row[i];for(const row of TABLE)DICT[locale][row[0]]=row[i];}

@@ -76,6 +76,17 @@ function attackMatch(session,m,actor,move,now){if(!['attack','shield','special']
 }
 export function matchView(m,id){const p=m.players.find(p=>p.userId===id);
  const enemy=m.players.find(x=>x!==p),publicEnemy=Object.fromEntries(['id','catalogId','name','type','rarity','asset','animationAsset','artKind','color','combatStyle','soundPitch','poseScales','attack','defense','health','power','level'].filter(k=>enemy.stats[k]!==undefined).map(k=>[k,enemy.stats[k]]));return {id:m.id,version:m.version,kind:m.kind,status:m.status,win:m.status==='completed'&&m.winnerId===id,yourTurn:m.turnUserId===id,turnDeadline:m.turnDeadline,round:m.round,lastMove:m.lastMove,playerHP:p.hp,enemyHP:enemy.hp,energy:p.energy,player:p.stats,opponent:{...publicEnemy,name:enemy.name,def:enemy.stats.def||publicEnemy,isBot:m.isBot},reward:m.reward,loss:p.reserved,rules:m.rules,scene:m.scene||(m.kind==='guild'?'guild-canyon':'arena')};}
+function scrubUserFromWorld(session,userId,now){
+ const w=session.world;
+ w.queue=(w.queue||[]).filter(q=>q.userId!==userId);
+ for(const m of w.matches||[])if(m.status==='active'&&m.players.some(p=>p.userId===userId)){const other=m.players.find(p=>p.userId!==userId);if(other?.userId&&session.accounts.get(other.userId))finishMatch(session,m,other.userId,now);else m.status='completed';}
+ for(const l of w.listings||[])if(l.sellerId===userId&&['open','proposal'].includes(l.status))l.status='cancelled';
+ for(const p of w.proposals||[])if([p.sellerId,p.buyerId].includes(userId)&&p.status==='pending')p.status='cancelled';
+ for(const g of w.guilds||[]){g.members=(g.members||[]).filter(m=>m.userId!==userId);if(g.founderId===userId)g.founderId=g.members[0]?.userId||null;if(g.members.length&&!(g.members||[]).some(m=>m.role==='leader'))g.members[0].role='leader';}
+ w.guilds=(w.guilds||[]).filter(g=>g.members?.length);
+ for(const board of Object.values(w.conquests||{}))if(board.pilots)delete board.pilots[userId];
+ for(const key of ['muted','chatLastSent','guildDaily'])if(w[key])delete w[key][userId];
+}
 function dispatchAction(session,body,now=Date.now()){
  const s=session.state,w=session.world,uid=body.robot_id,action=body.action;
  if(s.arenaQueue&&(!w.queue.some(q=>q.userId===s.profile.id&&q.expiresAt>now))){s.arenaQueue=null;w.queue=w.queue.filter(q=>q.userId!==s.profile.id);}
@@ -126,6 +137,7 @@ function dispatchAction(session,body,now=Date.now()){
  case 'admin_guild_event_save':result=G.saveGuildEvent(s,body.event);break;
  case 'admin_chat_mute':result=Chat.mutePilot(s,body.user_id,int(body.minutes,0,43200),now);break;
  case 'admin_chat_remove':result=Chat.moderateMessage(s,body.message_id);break;
+ case 'admin_delete_user':{const target=String(body.user_id||'');if(!target||target===s.profile.id)throw new Error('Piloto inválido.');const tp=session.profiles.find(p=>p.id===target);if(!tp)throw new Error('Piloto não encontrado.');if(tp.role==='admin'||session.accounts.get(target)?.profile.role==='admin')throw new Error('Não é possível excluir um administrador.');scrubUserFromWorld(session,target,now);session.profiles=session.profiles.filter(p=>p.id!==target);session.accounts.delete(target);s.adminAudit ||= [];s.adminAudit.unshift({id:C.uuid(),action:'user_delete',userId:target,actorId:s.profile.id,reason:String(body.reason||'').slice(0,300)||'Exclusão pelo painel',before:{name:tp.name},after:null,at:now});result={ok:true,name:tp.name};break;}
  case 'arena_find_match':case 'guild_find_battle':{
   if(action==='guild_find_battle'&&G.eventState(s,body.event_id,now)?.type==='guild-conquest')throw new Error('Use o mapa de conquista para este evento.');
   const kind=action==='guild_find_battle'?'guild':'arena',active=w.matches.find(m=>m.status==='active'&&m.players.some(p=>p.userId===s.profile.id));if(active)return {match:matchView(active,s.profile.id)};

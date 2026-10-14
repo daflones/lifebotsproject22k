@@ -15,7 +15,7 @@ const pendingActions = new Set([
   "trade_create", "trade_cancel", "trade_accept_sale", "trade_propose", "trade_review",
   "admin_social_settings", "admin_guild_event_save", "admin_chat_mute", "admin_chat_remove", "admin_guilds", "admin_trades", "admin_chat_messages",
   "arena_find_match", "arena_cancel_match", "arena_poll_match", "arena_move", "arena_finish",
-  "coupon_redeem", "admin_coupon_save", "admin_coupon_delete",
+  "coupon_redeem", "admin_coupon_save", "admin_coupon_delete", "admin_delete_user",
 ]);
 
 Deno.serve(async (request: Request) => {
@@ -51,6 +51,15 @@ Deno.serve(async (request: Request) => {
     }
     if(['deposit','withdraw','payment_status','admin_review_withdrawal'].includes(body.action))return jsonResponse(await paymentAction(user.id,body),200,headers);
     if(body.action==='admin_publish_notice'){const current=await executeGameAction(user.id,{action:'snapshot'}),validated=validatedContent({settings:body.notice},current.data);const saved=await serverClient().rpc('lr_admin_save_content',{p_actor:user.id,p_kind:validated.kind,p_value:validated.value});if(saved.error)throw new ApiError(400,'NOTICE_FAILED','Não foi possível publicar.');return jsonResponse({ok:true},200,headers);}
+    if(body.action==='admin_delete_user'){
+      const target=String(body.user_id||'');
+      if(!/^[0-9a-f-]{36}$/i.test(target))throw new ApiError(400,'INVALID_USER','Piloto inválido.');
+      if(target===user.id)throw new ApiError(400,'SELF_DELETE','Você não pode excluir a própria conta.');
+      const scrubbed=await executeGameAction(user.id,body);
+      const deleted=await serverClient().rpc('lr_admin_delete_user',{p_actor:user.id,p_user_id:target});
+      if(deleted.error){const code=String(deleted.error.message||'');if(code.includes('PENDING_WITHDRAWAL'))throw new ApiError(409,'PENDING_WITHDRAWAL','O piloto tem um saque pendente. Resolva-o antes de excluir.');throw new ApiError(400,'DELETE_FAILED','Não foi possível excluir o piloto.');}
+      return jsonResponse(scrubbed,200,headers);
+    }
     return jsonResponse(await executeGameAction(user.id,body),200,headers);
   } catch (error) { return errorResponse(error, headers); }
 });

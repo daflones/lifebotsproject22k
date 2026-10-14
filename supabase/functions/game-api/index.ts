@@ -15,6 +15,7 @@ const pendingActions = new Set([
   "trade_create", "trade_cancel", "trade_accept_sale", "trade_propose", "trade_review",
   "admin_social_settings", "admin_guild_event_save", "admin_chat_mute", "admin_chat_remove", "admin_guilds", "admin_trades", "admin_chat_messages",
   "arena_find_match", "arena_cancel_match", "arena_poll_match", "arena_move", "arena_finish",
+  "coupon_redeem", "admin_coupon_save", "admin_coupon_delete",
 ]);
 
 Deno.serve(async (request: Request) => {

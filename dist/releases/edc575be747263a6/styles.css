@@ -22,3 +22,19 @@
 .modal-overlay.tour-modal-overlay{background:transparent;backdrop-filter:none;pointer-events:none;align-items:flex-end;justify-content:flex-end;padding:0 26px 96px}
 .modal-overlay.tour-modal-overlay .modal{pointer-events:auto;width:410px;max-height:min(70dvh,560px);box-shadow:0 24px 70px #000c,0 0 0 1px #d5ee8722}
 @media(max-width:760px){.modal-overlay.tour-modal-overlay{justify-content:center;padding:0 12px 84px}.modal-overlay.tour-modal-overlay .modal{width:100%;max-width:440px;padding:24px 22px}}
+.whatsapp-fab{position:fixed;right:20px;bottom:96px;z-index:60;width:56px;height:56px;border-radius:50%;background:#25d366;color:#0b1c12;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(37,211,102,.45),0 0 0 1px #25d36633;transition:transform .2s,box-shadow .2s}
+.whatsapp-fab:hover{transform:scale(1.08);box-shadow:0 10px 30px rgba(37,211,102,.6)}
+.whatsapp-fab svg{width:30px;height:30px}
+.whatsapp-emblem{background:#25d366;color:#0b1c12}
+.whatsapp-emblem svg{width:34px;height:34px}
+.coupon-panel{margin:22px 0;padding:22px;border:1px solid #46533f55;border-radius:10px;background:linear-gradient(135deg,#1c2a20,#172129);display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;justify-content:space-between}
+.coupon-panel-info{flex:1;min-width:220px}
+.coupon-panel-info h3{display:flex;align-items:center;gap:8px;font-size:17px}
+.coupon-panel-info p{font-size:11px;margin-top:6px}
+.coupon-form{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+.coupon-form .form-field{min-width:220px;flex:1}
+.coupon-claims{width:100%;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.coupon-claims small{color:var(--muted);font-size:9px;letter-spacing:.1em;text-transform:uppercase}
+.coupon-claim{font-size:10px;padding:5px 10px;border-radius:20px;background:#d5ee8712;border:1px solid #d5ee8733;color:var(--accent)}
+@media(min-width:761px){.whatsapp-fab{bottom:28px;right:28px}}
+@media(max-width:760px){.whatsapp-fab{right:14px;bottom:calc(84px + env(safe-area-inset-bottom));width:50px;height:50px}.whatsapp-fab svg{width:26px;height:26px}.coupon-panel{padding:18px}.coupon-form{width:100%}.coupon-form .btn{flex:1}}

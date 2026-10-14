@@ -143,3 +143,17 @@ test('admin cria conquista com orçamento único e interface mostra mapa e ranki
  const state=JSON.parse(data.get('liferobots-demo-v1')),event=state.social.events.find(e=>e.type==='guild-conquest');assert.ok(event);assert.equal(event.participationRC,0);assert.equal(event.battleRewardRC,0);assert.equal(event.rewardPoolRC,1000);
  location.hash='#events';listeners.hashchange();assert.match(html(),/data-conquest-root/);assert.match(html(),/Ranking dos pilotos/);assert.equal((html().match(/class="territory-node/g)||[]).length,6);assert.match(html(),/Cerco &lt;Norte&gt;/);assert.ok(!html().includes('<img src=x onerror=alert(1)>'));
 });
+test('botão flutuante do WhatsApp usa o link configurado e a carteira tem área de resgate',()=>{
+ location.hash='#home';listeners.hashchange();assert.match(html(),/whatsapp-fab/);assert.match(html(),/chat\.whatsapp\.com\/KiXwUlykgJX1mmlnEwh1Ia/);
+ location.hash='#wallet';listeners.hashchange();assert.match(html(),/coupon-form/);assert.match(html(),/Resgatar cupom/);
+});
+test('admin cria cupom no painel e o piloto resgata o prêmio na carteira',async()=>{
+ location.hash='#admin';listeners.hashchange();assert.match(html(),/Cupons/);
+ await click('admin-tab','coupon-admin');assert.match(html(),/Cupons de resgate/);
+ await click('admin-coupon-edit','new');assert.match(modal(),/admin-coupon-form/);assert.match(modal(),/Tipo de prêmio/);
+ await listeners.submit({preventDefault(){},target:{id:'admin-coupon-form',dataset:{id:''},fields:{code:'UI500',maxUses:'3',expiresAt:'',kind:'lc',amount:'500',robotId:'moss',partId:'core',partLevel:'1',note:'',enabled:'on'}}});
+ let saved=JSON.parse(data.get('liferobots-demo-v1'));assert.equal(saved.social.coupons[0].code,'UI500');assert.equal(saved.social.coupons[0].reward.amount,500);
+ location.hash='#wallet';listeners.hashchange();
+ await listeners.submit({preventDefault(){},target:{id:'coupon-form',dataset:{},fields:{code:'ui500'}}});
+ saved=JSON.parse(data.get('liferobots-demo-v1'));assert.equal(saved.couponClaims.length,1);assert.equal(saved.couponClaims[0].code,'UI500');assert.match(html(),/coupon-claim/);
+});

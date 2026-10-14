@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import * as C from '../src/core.js';
 import * as G from '../src/guilds.js';
 import * as T from '../src/trading.js';
-import {ensureSocial,accountOf,membership,currentId,socialConfig,saveSocialSettings,validateSocial} from '../src/social-core.js';
+import {ensureSocial,accountOf,membership,currentId,socialConfig,saveSocialSettings,validateSocial,redeemCoupon,adminSaveCoupon,adminDeleteCoupon,couponStatus} from '../src/social-core.js';
 import {canReadRoom,sendMessage,moderateMessage,mutePilot} from '../src/chat.js';
 const NOW=Date.now();
 function state(){const s=C.initialState(NOW);ensureSocial(s,NOW);return s;}
@@ -95,4 +95,15 @@ test('admin valida todos os limites sociais, cria eventos datados e audita confi
 });
 test('clientes conectados não fabricam chat, trading, guildas ou créditos de recompensa',()=>{
  const s=state();s.serverAuthoritative=true;for(const fn of [()=>sendMessage(s,'global','oi'),()=>G.createGuild(s,'Equipe','EQ',''),()=>T.createListing(s,s.robots[0].uid,'sale',500),()=>saveSocialSettings(s,socialConfig(s))])assert.throws(fn,/servidor/);
+});
+test('cupom resgata saldo e robô uma única vez, e remoção bloqueia novos resgates',()=>{
+ const s=state();adminSaveCoupon(s,{code:'VIP100',maxUses:1,reward:{kind:'rc',amount:100}});assert.equal(redeemCoupon(s,' vip100 ').reward.amount,100);assert.throws(()=>redeemCoupon(s,'VIP100'),/resgatou/);assert.equal(couponStatus(s.social.coupons[0]),'exhausted');
+ adminSaveCoupon(s,{code:'ROBO',maxUses:5,reward:{kind:'robot',robotId:'moss'}});const before=s.robots.length;redeemCoupon(s,'robo');assert.equal(s.robots.length,before+1);assert.equal(s.robots.at(-1).contract.paidAmount,0);assert.equal(s.robots.at(-1).contract.principalReturnLC,0);
+ adminSaveCoupon(s,{code:'PECA9',maxUses:5,reward:{kind:'part',partId:'core',partLevel:2}});const items=s.inventory.length;redeemCoupon(s,'PECA9');assert.equal(s.inventory.length,items+1);assert.equal(s.inventory.at(-1).level,2);
+ adminDeleteCoupon(s,s.social.coupons[1].id);assert.throws(()=>redeemCoupon(s,'ROBO'),/encontrado/);assert.equal(s.adminAudit.filter(a=>a.action.startsWith('coupon')).length,4);
+});
+test('whatsapp da comunidade é configurável, exige https e anúncio é booleano',()=>{
+ const s=state(),cfg=socialConfig(s);assert.ok(cfg.whatsappLink.includes('chat.whatsapp.com'));assert.equal(cfg.whatsappPromo,false);
+ assert.throws(()=>validateSocial({...cfg,whatsappLink:'javascript:alert(1)'}),/URL|https/);assert.throws(()=>validateSocial({...cfg,whatsappLink:'http://inseguro.test'}),/https/);assert.throws(()=>validateSocial({...cfg,whatsappPromo:'yes'}),/social/);
+ validateSocial({...cfg,whatsappLink:'',whatsappPromo:true});
 });

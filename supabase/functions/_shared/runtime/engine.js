@@ -4,8 +4,8 @@ import {conquestOrder,claimConquestReward} from '../../../../src/guild-conquest.
 import * as T from '../../../../src/trading.js';
 import * as Chat from '../../../../src/chat.js';
 import * as A from '../../../../src/admin-operations.js';
-import {DEFAULT_SOCIAL,validateSocial,membership,socialConfig,currentId} from '../../../../src/social-core.js';
-export const freshWorld=()=>({guilds:[],messages:[],muted:{},chatLastSent:{},listings:[],proposals:[],trades:[],events:[],eventSnapshots:{},warScores:{},warParticipantGuild:{},rewardReceipts:[],guildDaily:{},queue:[],matches:[],commissions:{}});
+import {DEFAULT_SOCIAL,validateSocial,membership,socialConfig,currentId,redeemCoupon,saveCoupon,deleteCoupon} from '../../../../src/social-core.js';
+export const freshWorld=()=>({guilds:[],messages:[],muted:{},chatLastSent:{},listings:[],proposals:[],trades:[],events:[],eventSnapshots:{},warScores:{},warParticipantGuild:{},rewardReceipts:[],guildDaily:{},queue:[],matches:[],commissions:{},coupons:[]});
 const configKeys=['settings','catalog','parts','chapters','seasons','arenaRoster'];
 const ephemeral=['adminAccounts','adminUsers','affiliates','social','serverAuthoritative','wallets',...configKeys];
 export function storedState(s){const out=C.clone(Object.fromEntries(Object.entries(s).filter(([k])=>!ephemeral.includes(k))));if(out.transactions.length>500)out.transactions=out.transactions.slice(0,500);return out;}
@@ -120,6 +120,9 @@ function dispatchAction(session,body,now=Date.now()){
  case 'admin_adjust_balance':result=A.adjustDemoBalance(s,body.user_id,body.currency,int(body.amount,-100000000,100000000),body.reason);break;
  case 'admin_update_robot':result=A.updateDemoRobot(s,body.user_id,uid,body.values,body.reason);break;
  case 'admin_social_settings':validateSocial(body.settings);s.settings.social=body.settings;w.socialSettings=body.settings;result={settings:body.settings};break;
+ case 'coupon_redeem':result=redeemCoupon(s,body.code,now,'servidor');break;
+ case 'admin_coupon_save':result=saveCoupon(s,body.coupon,now);break;
+ case 'admin_coupon_delete':deleteCoupon(s,body.id);result={ok:true};break;
  case 'admin_guild_event_save':result=G.saveGuildEvent(s,body.event);break;
  case 'admin_chat_mute':result=Chat.mutePilot(s,body.user_id,int(body.minutes,0,43200),now);break;
  case 'admin_chat_remove':result=Chat.moderateMessage(s,body.message_id);break;
@@ -147,7 +150,7 @@ function dispatchAction(session,body,now=Date.now()){
 export function changedAccounts(session){const result=[];for(const [id,s] of session.accounts){const data=storedState(s),old=session.source.get(id);if(JSON.stringify(data)!==old.state)result.push({userId:id,revision:old.revision,data});}return result;}
 export function visibleSnapshot(session){const s=session.state,id=s.profile.id,own=activeGuild(s,id),admin=s.profile.role==='admin',data={...storedState(s),serverAuthoritative:true,mode:session.mode,realMoneyEnabled:session.mode==='real'&&s.settings.realMoneyEnabled===true};for(const key of configKeys)data[key]=s[key];if(!admin)delete data.adminAudit;if(s.arenaQueue?.expiresAt<=Date.now())data.arenaQueue=null;
  data.robots=s.robots.map(r=>{const info=C.robotInfo(s,r),old=r.productionPeriod;let view=r;if(old&&old.daily!==info.daily){const till=Math.min(Date.now(),info.expires);view={...r,lastCollected:till,pendingProductionRC:(r.pendingProductionRC||0)+Math.max(0,till-Math.max(r.lastCollected,r.createdAt))/C.DAY*old.daily};}return {...view,expiresAt:info.expires,productionDailyMinor:info.daily*100};});
- data.social=C.clone(session.world);data.social.messages=data.social.messages.filter(m=>['global','market'].includes(m.room)||m.room==='guild:'+own);data.social.activeGuildBattle=s.guildBattle||null;delete data.social.queue;delete data.social.matches;delete data.social.commissions;delete data.productionDays;data.social.rewardReceipts=data.social.rewardReceipts.filter(r=>admin||r.userId===id);data.social.muted=admin?data.social.muted:{[id]:data.social.muted[id]||0};data.social.guildDaily={[id]:data.social.guildDaily[id]};data.social.chatLastSent={[id]:data.social.chatLastSent[id]};data.social.proposals=data.social.proposals.filter(p=>admin||p.buyerId===id||p.sellerId===id);data.social.trades=data.social.trades.filter(p=>admin||p.buyerId===id||p.sellerId===id);
+ data.social=C.clone(session.world);data.social.messages=data.social.messages.filter(m=>['global','market'].includes(m.room)||m.room==='guild:'+own);data.social.activeGuildBattle=s.guildBattle||null;delete data.social.queue;delete data.social.matches;delete data.social.commissions;delete data.productionDays;data.social.rewardReceipts=data.social.rewardReceipts.filter(r=>admin||r.userId===id);data.social.muted=admin?data.social.muted:{[id]:data.social.muted[id]||0};data.social.guildDaily={[id]:data.social.guildDaily[id]};data.social.chatLastSent={[id]:data.social.chatLastSent[id]};data.social.proposals=data.social.proposals.filter(p=>admin||p.buyerId===id||p.sellerId===id);data.social.trades=data.social.trades.filter(p=>admin||p.buyerId===id||p.sellerId===id);if(!admin)delete data.social.coupons;
  for(const board of Object.values(data.social.conquests||{}))board.pilots=board.pilots[id]?{[id]:board.pilots[id]}:{};
  data.adminAccounts=session.profiles.map(p=>({profile:{id:p.id,name:p.name,referralCode:p.referralCode},robots:[],inventory:[],balances:{LC:0,RC:0}}));
  if(admin)data.adminUsers=[...session.accounts.values()].map(a=>({...storedState(a),profile:{...a.profile}}));

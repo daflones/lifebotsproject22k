@@ -1,4 +1,5 @@
 import {socialConfig,currentId} from './social-core.js';
+import {translateDom} from './i18n.js';
 
 const KEY='liferobots-chat-window-v1';
 const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
@@ -36,7 +37,7 @@ export function createFloatingChat(env){
   const oldTop=oldLog?.scrollTop||0,stick=bottom||lastChannel!==channel||!oldLog||(oldLog.scrollHeight-oldLog.clientHeight-oldTop<30);
   const title=env.escape(env.view.roomTitle()),body=mode==='minimized'?'':env.view.chatPanel({floating:true,draft:drafts.get(channel)||''});
   const markup=`<aside class="chat-float ${mode==='minimized'?'is-minimized':''} ${mode==='maximized'?'is-maximized':''}" aria-label="Chat flutuante" data-chat-mode="${mode}" style="left:${r.x}px;top:${r.y}px;width:${r.width}px;height:${r.height}px"><header class="chat-float-header"><div class="chat-float-grip no-drag" data-chat-handle tabindex="0" role="group" aria-label="Mover chat. Use as setas do teclado ou arraste." title="Arraste para mover o chat">${env.icon('users')}<span><b>Chat <i></i></b><small>${title}</small></span><span class="chat-drag-dots" aria-hidden="true">⠿</span></div><div class="chat-float-controls">${mode==='minimized'?`<button data-a="floating-chat-open" aria-label="Abrir chat" title="Abrir chat">${env.icon('plus')}</button>`:`<button data-a="floating-chat-minimize" aria-label="Minimizar chat" title="Minimizar chat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 16h14"/></svg></button>`}<button data-a="floating-chat-maximize" aria-label="${mode==='maximized'?'Restaurar tamanho':'Maximizar chat'}" title="${mode==='maximized'?'Restaurar tamanho':'Maximizar chat'}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${mode==='maximized'?'M8 8h12v12H8Z M4 15V4h11':'M5 9V5h4 M15 5h4v4 M19 15v4h-4 M9 19H5v-4'}"/></svg></button><button class="chat-float-close" data-a="floating-chat-close" aria-label="Fechar chat" title="Fechar chat">${env.icon('close')}</button></div></header>${body}${mode==='minimized'?'':'<div class="chat-float-footnote">Arraste pelo título · Seu hangar continua aqui</div>'}</aside>`;
-  if(markup!==rendered){root.innerHTML=markup;rendered=markup;lastChannel=channel;const log=root.querySelector?.('.chat-messages');if(log)log.scrollTop=stick?log.scrollHeight:oldTop;
+  if(markup!==rendered){root.innerHTML=markup;translateDom(root);rendered=markup;lastChannel=channel;const log=root.querySelector?.('.chat-messages');if(log)log.scrollTop=stick?log.scrollHeight:oldTop;
    if(focused||focus){const input=root.querySelector?.('textarea');input?.focus?.({preventScroll:true});if(selection)input?.setSelectionRange?.(...selection);}
   }else if(focus)focusComposer();
  }

@@ -219,8 +219,9 @@ input[type=range]{width:100%;accent-color:var(--accent);height:30px}
  .lp-hero-ctas .lp-btn{flex:1}
  .lp-section{padding:52px 18px}
  .lp-section h2{font-size:22px;margin-bottom:22px}
- .lp-steps-tabs{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px;margin:0 -18px;padding-left:18px;padding-right:18px}
- .lp-step-tab{scroll-snap-align:start;flex:0 0 78%;padding:12px 14px}
+ .lp-steps-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+ .lp-step-tab{padding:11px 12px;gap:8px}
+ .lp-robot-rail{display:grid;grid-template-columns:1fr 1fr;overflow:visible;scroll-snap-type:none;padding-bottom:0}
  .lp-step-panel{gap:18px;padding:18px}
  .lp-step-media{aspect-ratio:16/9}
  .lp-robot-card{flex-basis:150px;padding:11px}

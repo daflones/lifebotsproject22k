@@ -62,7 +62,7 @@ $$('.lp-step-tab').forEach(tab=>tab.addEventListener('click',()=>{
 let selRobot=ROBOTS[3];
 const rail=$('#lp-robot-rail');
 rail.innerHTML=ROBOTS.map((r,i)=>`<button class="lp-robot-card" data-i="${i}"><span class="lp-crop" role="img" aria-label="${r.name}" style="background-image:url('/assets/${r.art}')"></span><b>${r.name}</b><i class="rarity-${Object.values(r.rarity)[0].toLowerCase().replace('á','a').replace('é','e')}">${r.rarity[lang]||r.rarity.pt}</i></button>`).join('');
-rail.querySelectorAll('.lp-robot-card').forEach(card=>card.addEventListener('click',()=>{selRobot=ROBOTS[+card.dataset.i];renderDetail(selRobot);rail.querySelectorAll('.lp-robot-card').forEach(c=>c.classList.toggle('sel',c===card));}));
+rail.querySelectorAll('.lp-robot-card').forEach(card=>card.addEventListener('click',()=>{selRobot=ROBOTS[+card.dataset.i];renderDetail(selRobot);rail.querySelectorAll('.lp-robot-card').forEach(c=>c.classList.toggle('sel',c===card));if(innerWidth<761)$('#lp-robot-detail').scrollIntoView({behavior:'smooth',block:'nearest'});}));
 function renderDetail(r){
  const max={attack:151,defense:124,health:480,daily:885};
  $('#lp-robot-detail').innerHTML=`<span class="lp-crop" role="img" aria-label="${r.name}" style="background-image:url('/assets/${r.art}')"></span><div>

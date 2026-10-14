@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>LifeBots — Monte sua equipe de robôs e produza recompensas</title>
+<meta name="description" content="Adquira robôs colecionáveis, produza RobotCoins todos os dias, vença batalhas na arena e conquiste territórios com sua guilda. Conheça a economia do LifeBots e comece com bônus de boas-vindas.">
+<meta name="theme-color" content="#131c22">
+<link rel="canonical" href="https://lifebots.com.br/lp">
+<link rel="alternate" hreflang="pt-BR" href="https://lifebots.com.br/lp">
+<link rel="alternate" hreflang="en" href="https://lifebots.com.br/lp?lang=en">
+<link rel="alternate" hreflang="es" href="https://lifebots.com.br/lp?lang=es">
+<link rel="alternate" hreflang="ru" href="https://lifebots.com.br/lp?lang=ru">
+<link rel="alternate" hreflang="ja" href="https://lifebots.com.br/lp?lang=ja">
+<link rel="alternate" hreflang="x-default" href="https://lifebots.com.br/lp">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="LifeBots">
+<meta property="og:title" content="LifeBots — Robôs colecionáveis que produzem recompensas">
+<meta property="og:description" content="Adquira robôs, produza RobotCoins todos os dias, vença batalhas e conquiste territórios com sua guilda. Comece com bônus de boas-vindas.">
+<meta property="og:url" content="https://lifebots.com.br/lp">
+<meta property="og:image" content="https://lifebots.com.br/assets/social-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="LifeBots — Robôs colecionáveis que produzem recompensas">
+<meta name="twitter:description" content="Produza RobotCoins, vença batalhas e conquiste territórios com sua guilda.">
+<meta name="twitter:image" content="https://lifebots.com.br/assets/social-cover.png">
+<link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
+<link rel="preload" as="image" href="/assets/ember-combat-v6.webp">
+<link rel="stylesheet" href="/landing.css">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18509485805"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'AW-18509485805');
+</script>
+</head>
+<body>
+<nav class="lp-nav">
+  <a class="lp-brand" href="/lp"><img src="/assets/game-mark.png" alt="LifeBots"><span>LifeBots<small data-i18n="tagline">UMA NOVA ERA</small></span></a>
+  <div class="lp-nav-right">
+    <div class="lp-lang"><button id="lp-lang-btn" aria-label="Idioma">PT ▾</button><div id="lp-lang-menu" hidden>
+      <button data-lang="pt">Português</button><button data-lang="en">English</button><button data-lang="es">Español</button><button data-lang="ru">Русский</button><button data-lang="ja">日本語</button>
+    </div></div>
+    <a class="lp-btn lp-btn-ghost" href="/" data-i18n="nav.login">Entrar</a>
+    <a class="lp-btn lp-btn-accent" href="/#signup" data-i18n="nav.play">Jogar grátis</a>
+  </div>
+</nav>
+
+<header class="lp-hero">
+  <div class="lp-hero-bg" style="background-image:url('/assets/sector-space.webp')"></div>
+  <div class="lp-hero-grid">
+    <div class="lp-hero-copy lp-reveal">
+      <span class="lp-eyebrow" data-i18n="hero.eyebrow">Jogo de coleção, produção e conquista</span>
+      <h1 data-i18n="hero.h1">Monte sua equipe de robôs e transforme produção em recompensas.</h1>
+      <p data-i18n="hero.sub">Adquira robôs colecionáveis, produza RobotCoins todos os dias, vença batalhas na arena e conquiste territórios com sua guilda — tudo em tempo real.</p>
+      <div class="lp-hero-ctas">
+        <a class="lp-btn lp-btn-accent lp-btn-lg" href="/#signup" data-i18n="hero.cta">Começar agora</a>
+        <a class="lp-btn lp-btn-ghost lp-btn-lg" href="#como-funciona" data-i18n="hero.cta2">Ver como funciona</a>
+      </div>
+      <div class="lp-hero-chips">
+        <span class="lp-chip"><b>9</b> <i data-i18n="hero.chip1">robôs colecionáveis</i></span>
+        <span class="lp-chip"><b>300 LC</b> <i data-i18n="hero.chip2">bônus de boas-vindas</i></span>
+        <span class="lp-chip"><b data-i18n="hero.chip3">Eventos ao vivo</b></span>
+      </div>
+    </div>
+    <div class="lp-hero-stage lp-reveal" id="lp-hero-stage">
+      <div class="lp-hero-robot lp-float-1 lp-crop" role="img" aria-label="NOVA-08" style="background-image:url('/assets/nova-combat-v6.webp')"></div>
+      <div class="lp-hero-robot lp-float-2 lp-crop" role="img" aria-label="EMBER-04" style="background-image:url('/assets/ember-combat-v6.webp')"></div>
+      <div class="lp-hero-robot lp-float-3 lp-crop" role="img" aria-label="MOSS-01" style="background-image:url('/assets/moss-combat-v6.webp')"></div>
+      <div class="lp-hero-orb"><img src="/assets/robotcoin.png" alt="RobotCoin"><span>+<b id="lp-hero-tick">0</b> RC</span></div>
+    </div>
+  </div>
+  <div class="lp-scroll-hint" aria-hidden="true"></div>
+</header>
+
+<main>
+<section class="lp-section" id="como-funciona">
+  <span class="lp-eyebrow" data-i18n="steps.eyebrow">Como funciona</span>
+  <h2 data-i18n="steps.h2">Do primeiro robô ao primeiro saque — em quatro passos.</h2>
+  <div class="lp-steps">
+    <div class="lp-steps-tabs" role="tablist">
+      <button class="lp-step-tab active" data-step="0"><b>01</b><span data-i18n="steps.t1">Adquira seu robô</span></button>
+      <button class="lp-step-tab" data-step="1"><b>02</b><span data-i18n="steps.t2">Produza todos os dias</span></button>
+      <button class="lp-step-tab" data-step="2"><b>03</b><span data-i18n="steps.t3">Batalhe e explore</span></button>
+      <button class="lp-step-tab" data-step="3"><b>04</b><span data-i18n="steps.t4">Converta e saque</span></button>
+    </div>
+    <div class="lp-steps-panels">
+      <div class="lp-step-panel active lp-reveal" data-panel="0">
+        <div class="lp-step-media"><img src="/assets/hangar.webp" alt="Hangar"></div>
+        <div class="lp-step-text"><h3 data-i18n="steps.h1">Sua oficina, seus robôs</h3><p data-i18n="steps.p1">Escolha entre exploradores, atacantes e guardiões. Cada robô tem prazo de vida, produção diária e limite de usos próprios — e, ao expirar, o valor de aquisição retorna em LifeCoins.</p><div class="lp-step-stats"><span><b>LC</b><i data-i18n="steps.s1a">moeda de aquisição</i></span><span><b>100%</b><i data-i18n="steps.s1b">valor de retorno ao expirar</i></span></div></div>
+      </div>
+      <div class="lp-step-panel lp-reveal" data-panel="1">
+        <div class="lp-step-media"><img src="/assets/quantum-reactor.webp" alt="Produção"></div>
+        <div class="lp-step-text"><h3 data-i18n="steps.h2">Rendimentos enquanto você vive</h3><p data-i18n="steps.p2">Robôs ativos geram RobotCoins a cada dia, automaticamente. Você acompanha a produção da equipe no hangar e coleta quando quiser — quanto melhor o robô e os equipamentos, maior a produção.</p><div class="lp-step-stats"><span><b id="lp-daily-demo">30</b><i>RC/dia</i></span><span><img src="/assets/robotcoin.png" alt=""><i data-i18n="steps.s2b">produção contínua</i></span></div></div>
+      </div>
+      <div class="lp-step-panel lp-reveal" data-panel="2">
+        <div class="lp-step-media"><img src="/assets/battle-aurora.webp" alt="Arena"></div>
+        <div class="lp-step-text"><h3 data-i18n="steps.h3">Arena e aventura</h3><p data-i18n="steps.p3">Dispute batalhas PvP por turnos contra jogadores reais e explore capítulos do modo história com recompensas únicas. Vitórias na arena somam RobotCoins ao seu saldo.</p><div class="lp-step-stats"><span><b>4×</b><i data-i18n="steps.s3a">batalhas grátis/dia</i></span><span><b>+80 RC</b><i data-i18n="steps.s3b">por vitória</i></span></div></div>
+      </div>
+      <div class="lp-step-panel lp-reveal" data-panel="3">
+        <div class="lp-step-media"><img src="/assets/trade-terminal.webp" alt="Carteira"></div>
+        <div class="lp-step-text"><h3 data-i18n="steps.h4">Carteira transparente</h3><p data-i18n="steps.p4">Acompanhe saldos em LifeCoins e RobotCoins com estimativa em reais. Converta entre moedas pela cotação vigente e solicite saque via Pix direto na carteira.</p><div class="lp-step-stats"><span><b>Pix</b><i data-i18n="steps.s4a">depósito e saque</i></span><span><b>LC ⇄ RC</b><i data-i18n="steps.s4b">conversão interna</i></span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="lp-section" id="robos">
+  <span class="lp-eyebrow" data-i18n="robots.eyebrow">Os robôs</span>
+  <h2 data-i18n="robots.h2">Nove modelos. Três classes. Cada um com sua produção.</h2>
+  <div class="lp-robot-showcase">
+    <div class="lp-robot-rail" id="lp-robot-rail"></div>
+    <div class="lp-robot-detail lp-reveal" id="lp-robot-detail"></div>
+  </div>
+</section>
+
+<section class="lp-section lp-section-alt" id="simulador">
+  <span class="lp-eyebrow" data-i18n="sim.eyebrow">Simulador de rendimentos</span>
+  <h2 data-i18n="sim.h2">Veja quanto uma equipe pode produzir.</h2>
+  <p class="lp-section-sub" data-i18n="sim.sub">Simulação ilustrativa com os valores reais configurados no jogo.</p>
+  <div class="lp-sim lp-reveal">
+    <div class="lp-sim-controls">
+      <label data-i18n="sim.pick">Escolha o robô</label>
+      <div class="lp-sim-robots" id="lp-sim-robots"></div>
+      <label data-i18n="sim.qty">Tamanho da equipe: <b id="lp-sim-qty-label">1</b></label>
+      <input type="range" id="lp-sim-qty" min="1" max="5" value="1" step="1">
+    </div>
+    <div class="lp-sim-results">
+      <div class="lp-sim-card"><span data-i18n="sim.r1">Produção diária</span><b><img src="/assets/robotcoin.png" alt="RC"><i id="lp-sim-daily">0</i> RC</b></div>
+      <div class="lp-sim-card"><span data-i18n="sim.r2">Total no ciclo de vida</span><b><i id="lp-sim-cycle">0</i> RC</b></div>
+      <div class="lp-sim-card"><span data-i18n="sim.r3">Equivalente em LifeCoins</span><b><img src="/assets/lifecoin.png" alt="LC"><i id="lp-sim-lc">0</i> LC</b></div>
+      <div class="lp-sim-card"><span data-i18n="sim.r4">Estimativa em reais</span><b id="lp-sim-brl">R$ 0</b></div>
+      <p class="lp-sim-note" data-i18n="sim.note">* Sem contar batalhas, missões, comissões e eventos de guilda — que somam ainda mais RC. Valores ilustrativos; a cotação vigente aparece na carteira do jogo.</p>
+    </div>
+  </div>
+</section>
+
+<section class="lp-section" id="economia">
+  <span class="lp-eyebrow" data-i18n="eco.eyebrow">A economia</span>
+  <h2 data-i18n="eco.h2">Duas moedas, um ciclo completo.</h2>
+  <div class="lp-eco lp-reveal">
+    <svg class="lp-eco-flow" viewBox="0 0 900 260" aria-hidden="true">
+      <defs><linearGradient id="lpGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#bfa46c"/><stop offset="1" stop-color="#5c9379"/></linearGradient></defs>
+      <path class="lp-flow-path" d="M120 130 C 240 40, 320 40, 430 110" fill="none" stroke="url(#lpGrad)" stroke-width="2" stroke-dasharray="6 8"/>
+      <path class="lp-flow-path lp-flow-path-2" d="M430 150 C 560 220, 660 200, 780 130" fill="none" stroke="#5c9379" stroke-width="2" stroke-dasharray="6 8"/>
+      <path class="lp-flow-path lp-flow-path-3" d="M780 130 C 660 60, 300 220, 120 150" fill="none" stroke="#8fa7ae" stroke-width="1.5" stroke-dasharray="4 9" opacity=".55"/>
+      <circle class="lp-pulse lp-pulse-1" r="5" fill="#d5ee87"/>
+      <circle class="lp-pulse lp-pulse-2" r="5" fill="#5c9379"/>
+      <circle class="lp-pulse lp-pulse-3" r="4" fill="#8fa7ae"/>
+    </svg>
+    <div class="lp-eco-nodes">
+      <div class="lp-eco-node" style="--x:0"><img src="/assets/lifecoin.png" alt="LC"><b data-i18n="eco.n1">Depósito Pix → LifeCoins</b><span data-i18n="eco.d1">Você recarrega a carteira em reais</span></div>
+      <div class="lp-eco-node" style="--x:1"><span class="lp-crop lp-eco-crop" role="img" aria-label="Robô" style="background-image:url('/assets/moss-combat-v6.webp')"></span><b data-i18n="eco.n2">LifeCoins → Robôs</b><span data-i18n="eco.d2">Adquira robôs e equipamentos na oficina</span></div>
+      <div class="lp-eco-node" style="--x:2"><img src="/assets/robotcoin.png" alt="RC"><b data-i18n="eco.n3">Robôs → RobotCoins</b><span data-i18n="eco.d3">Produção diária, arena, missões e guilda</span></div>
+      <div class="lp-eco-node" style="--x:3"><img src="/assets/reward-chest.png" alt="Saque"><b data-i18n="eco.n4">RobotCoins → Saque</b><span data-i18n="eco.d4">Converta e retire via Pix pela carteira</span></div>
+    </div>
+    <ul class="lp-eco-sources">
+      <li><b data-i18n="eco.src1">Produção diária</b><span data-i18n="eco.srcd1">robôs ativos geram RC a cada dia</span></li>
+      <li><b data-i18n="eco.src2">Arena PvP</b><span data-i18n="eco.srcd2">vitórias pagam bônus em RC</span></li>
+      <li><b data-i18n="eco.src3">Aventura</b><span data-i18n="eco.srcd3">capítulos com recompensas únicas</span></li>
+      <li><b data-i18n="eco.src4">Comissões</b><span data-i18n="eco.srcd4">convide amigos e ganhe sobre a rede</span></li>
+      <li><b data-i18n="eco.src5">Guildas</b><span data-i18n="eco.srcd5">eventos de conquista com prêmio em RC</span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="lp-section lp-section-alt" id="guildas">
+  <span class="lp-eyebrow" data-i18n="guild.eyebrow">Guildas e conquista</span>
+  <h2 data-i18n="guild.h2">Guerras de território em tempo real.</h2>
+  <p class="lp-section-sub" data-i18n="guild.sub">Castelos, torres, casas e cabanas mudam de dono durante os eventos. Toque em um território para enviar um ataque da demonstração.</p>
+  <div class="lp-guild-grid">
+    <div class="lp-map lp-reveal" id="lp-map"></div>
+    <div class="lp-guild-side">
+      <div class="lp-guild-score lp-reveal">
+        <span class="lp-eyebrow" data-i18n="guild.score">Placar da demonstração</span>
+        <div class="lp-score-row"><b id="lp-score-you">0</b><span data-i18n="guild.you">sua contribuição</span></div>
+        <div class="lp-score-bar"><i id="lp-score-bar"></i></div>
+        <p data-i18n="guild.hint">Cada ataque soma contribuição — no jogo, o prêmio do evento é dividido entre os membros conforme a participação.</p>
+      </div>
+      <ul class="lp-guild-points lp-reveal">
+        <li><b data-i18n="guild.p1">Cerco cooperativo</b><span data-i18n="guild.pd1">ataque, defenda, repare e fortifique junto com a guilda</span></li>
+        <li><b data-i18n="guild.p2">Ranking de pilotos</b><span data-i18n="guild.pd2">cada membro pontua pela própria contribuição</span></li>
+        <li><b data-i18n="guild.p3">Chat da guilda</b><span data-i18n="guild.pd3">coordene estratégias em tempo real</span></li>
+        <li><b data-i18n="guild.p4">Prêmio em RobotCoins</b><span data-i18n="guild.pd4">orçamento fixo por evento, dividido por mérito</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="lp-final">
+  <div class="lp-final-card lp-reveal">
+    <img class="lp-final-guide" src="/assets/nexa-guide.webp" alt="NEXA">
+    <span class="lp-eyebrow" data-i18n="final.eyebrow">Pronto para despertar?</span>
+    <h2 data-i18n="final.h2">Sua primeira faísca está esperando no hangar.</h2>
+    <p data-i18n="final.sub">Crie sua conta, faça o tour guiado pelo universo e resgate o bônus de boas-vindas de 300 LifeCoins.</p>
+    <a class="lp-btn lp-btn-accent lp-btn-lg" href="/#signup" data-i18n="final.cta">Criar conta grátis</a>
+    <span class="lp-final-note" data-i18n="final.note">Sem instalação — funciona no navegador do celular e do computador.</span>
+  </div>
+</section>
+</main>
+
+<footer class="lp-footer">
+  <div class="lp-footer-inner">
+    <a class="lp-brand" href="/lp"><img src="/assets/game-mark.png" alt=""><span>LifeBots</span></a>
+    <div class="lp-footer-links">
+      <a href="/" data-i18n="ft.play">Entrar no jogo</a>
+      <a href="/#login" data-i18n="ft.login">Login</a>
+      <a href="https://lifebots.com.br" data-i18n="ft.site">Site oficial</a>
+    </div>
+    <span class="lp-footer-copy">© <i id="lp-year">2026</i> LifeBots · lifebots.com.br</span>
+  </div>
+</footer>
+
+<a class="lp-sticky-cta" href="/#signup" id="lp-sticky-cta" hidden><span data-i18n="sticky.cta">Jogar grátis</span><b data-i18n="sticky.bonus">+300 LC de bônus</b></a>
+<script type="module" src="/landing.js"></script>
+</body>
+</html>

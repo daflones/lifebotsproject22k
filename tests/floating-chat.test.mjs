@@ -14,12 +14,12 @@ test('janela cabe no celular, mantém a barra inferior livre e se adapta ao tecl
  }
  const r=chatWindowLayout({width:360,height:740,bottomReserve:80},'window');assert.equal(r.width,340);assert.equal(r.height,360);assert.deepEqual(chatWindowPosition(r,-999,9999),{x:0,y:1});
 });
-test('no celular o chat começa minimizado e respeita a escolha salva de abrir',()=>{
- const f=fixture(390);assert.equal(f.chat.mode,'minimized');assert.ok(!f.root.innerHTML.includes('textarea'));
- f.chat.open();const restored=createFloatingChat(f.env);restored.refresh();assert.equal(restored.mode,'window');restored.dispose();f.chat.dispose();
+test('o chat começa fechado por padrão e respeita a escolha salva de abrir',()=>{
+ for(const width of [390,1000]){const f=fixture(width);assert.equal(f.chat.mode,'closed');assert.equal(f.root.hidden,true);assert.ok(!f.root.innerHTML.includes('textarea'));
+ f.chat.open();const restored=createFloatingChat(f.env);restored.refresh();assert.equal(restored.mode,'window');restored.dispose();f.chat.dispose();}
 });
 test('minimizar, maximizar e restaurar preservam posição, canal e rascunho',()=>{
- const f=fixture();assert.match(f.root.innerHTML,/data-chat-mode="window"/);f.chat.setDraft('Texto <a guardar>');f.chat.minimize();assert.match(f.root.innerHTML,/data-chat-mode="minimized"/);assert.ok(!f.root.innerHTML.includes('textarea'));
+ const f=fixture();f.chat.open();assert.match(f.root.innerHTML,/data-chat-mode="window"/);f.chat.setDraft('Texto <a guardar>');f.chat.minimize();assert.match(f.root.innerHTML,/data-chat-mode="minimized"/);assert.ok(!f.root.innerHTML.includes('textarea'));
  f.chat.maximize();assert.match(f.root.innerHTML,/data-chat-mode="maximized"/);assert.match(f.root.innerHTML,/Texto &lt;a guardar&gt;/);f.chat.maximize();assert.equal(f.chat.mode,'window');assert.deepEqual(f.chat.position,{x:1,y:1});
  f.chat.setRoom('market');assert.ok(!f.root.innerHTML.includes('Texto'));f.chat.setRoom('global');assert.ok(f.root.innerHTML.includes('Texto'));f.chat.clearDraft();assert.ok(!f.root.innerHTML.includes('Texto'));f.chat.dispose();
 });
@@ -36,7 +36,7 @@ test('cancelar arraste restaura posição e teclado move sem arrastar mensagens 
 });
 test('preferências persistem por conta, janela fica oculta no login e respeita configuração admin',()=>{
  const f=fixture();f.chat.setRoom('market');f.chat.minimize();const another=createFloatingChat(f.env);another.refresh();assert.equal(another.mode,'minimized');assert.match(f.root.innerHTML,/market/);f.setPage('login');another.refresh();assert.equal(f.root.hidden,true);
- f.setPage('home');f.state.settings.social.chatFloatingEnabled=false;another.refresh();assert.equal(f.root.hidden,true);f.state.settings.social.chatFloatingEnabled=true;f.state.profile.id='new-profile';another.refresh();assert.equal(another.mode,'window');assert.equal(f.root.hidden,false);another.dispose();f.chat.dispose();
+ f.setPage('home');f.state.settings.social.chatFloatingEnabled=false;another.refresh();assert.equal(f.root.hidden,true);f.state.settings.social.chatFloatingEnabled=true;f.state.profile.id='new-profile';another.refresh();assert.equal(another.mode,'closed');assert.equal(f.root.hidden,true);another.open();assert.equal(f.root.hidden,false);another.dispose();f.chat.dispose();
 });
 test('painel flutuante usa os mesmos canais e permissões, com texto escapado',()=>{
  const state=C.initialState();ensureSocial(state);state.social.messages.unshift({id:'test-message',authorId:state.profile.id,name:'<Piloto>',room:'global',text:'<script>alert(1)</script>',at:Date.now()});
@@ -44,7 +44,7 @@ test('painel flutuante usa os mesmos canais e permissões, com texto escapado',(
  const panel=view.chatPanel({floating:true,draft:'<rascunho>'});assert.match(panel,/floating-chat-form/);assert.match(panel,/&lt;script&gt;/);assert.match(panel,/&lt;rascunho&gt;/);assert.ok(!panel.includes('<script>'));view.setRoom('guild');assert.equal(view.getChannel(),null);assert.match(view.chatPanel({floating:true}),/Encontrar guilda/);assert.ok(!view.chatPanel({floating:true}).includes('floating-chat-form'));
 });
 test('X remove o chat da tela e reabrir preserva canal, posição e rascunho',()=>{
- const f=fixture();f.chat.setRoom('market');f.chat.setDraft('Oferta em andamento');assert.match(f.root.innerHTML,/data-a="floating-chat-close"/);
+ const f=fixture();f.chat.open();f.chat.setRoom('market');f.chat.setDraft('Oferta em andamento');assert.match(f.root.innerHTML,/data-a="floating-chat-close"/);
  const position=f.chat.position;f.chat.close();assert.equal(f.chat.mode,'closed');assert.equal(f.root.hidden,true);assert.equal(f.root.innerHTML,'');f.chat.refresh();assert.equal(f.root.innerHTML,'');
  f.chat.open();assert.equal(f.root.hidden,false);assert.match(f.root.innerHTML,/market/);assert.match(f.root.innerHTML,/Oferta em andamento/);assert.deepEqual(f.chat.position,position);
  f.chat.close();const restored=createFloatingChat(f.env);restored.refresh();assert.equal(restored.mode,'closed');assert.equal(f.root.hidden,true);restored.open();assert.equal(f.root.hidden,false);restored.dispose();f.chat.dispose();

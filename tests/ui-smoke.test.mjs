@@ -40,11 +40,14 @@ test('abas administrativas e de oficina mostram seus controles',async()=>{
  await click('admin-tab','parts');assert.match(html(),/Equipamentos e compatibilidade/);
  location.hash='#shop';listeners.hashchange();await click('shop-tab','inventory');assert.match(html(),/Pulso Verde/);
 });
-test('tutorial usa quatro passos e paga uma única vez pela interface',async()=>{
- await click('tutorial');assert.match(modal(),/PASSO 1 DE 4/);
- for(let i=0;i<3;i++)await click('tutorial-next');assert.match(modal(),/Resgatar 300 LC/);
+test('tutorial guia pelas telas e paga uma única vez pela interface',async()=>{
+ location.hash='#home';listeners.hashchange();await click('tutorial');assert.match(modal(),/PASSO 1 DE 8/);
+ for(let i=0;i<6;i++){await click('tutorial-next');assert.match(modal(),/Continuar/);}
+ assert.match(elements.get('#app').innerHTML,/Guildas/);
+ await click('tutorial-next');assert.match(modal(),/Resgatar 300 LC/);
  await click('tutorial-claim');assert.equal(JSON.parse(data.get('liferobots-demo-v1')).profile.tutorial,true);
- await click('tutorial');assert.equal(modal(),'');
+ await click('tutorial');assert.match(modal(),/PASSO 1 DE 8/);
+ for(let i=0;i<7;i++)await click('tutorial-next');assert.match(modal(),/Concluir tour/);await click('close');assert.equal(modal(),'');
 });
 test('login demo não persiste senha e mantém nome escapado no HTML',async()=>{
  location.hash='#login';listeners.hashchange();elements.set('#auth-status',{textContent:''});
@@ -124,7 +127,7 @@ test('mercado transfere uma compra e a troca espera a contraparte',async()=>{
 
 
 test('o chat permanece sobre o hangar, minimiza, maximiza e troca de canal sem navegar',async()=>{
- location.hash='#home';listeners.hashchange();assert.match(elements.get('#app').innerHTML,/Hangar principal/);assert.match(chatHTML(),/data-chat-mode="window"/);assert.match(chatHTML(),/floating-chat-form/);const original=elements.get('#app').innerHTML;
+ location.hash='#home';listeners.hashchange();assert.match(elements.get('#app').innerHTML,/Hangar principal/);await click('floating-chat-close');assert.equal(chatHTML(),'');await click('floating-chat-open');assert.match(chatHTML(),/data-chat-mode="window"/);assert.match(chatHTML(),/floating-chat-form/);const original=elements.get('#app').innerHTML;
  await click('floating-chat-minimize');assert.match(chatHTML(),/data-chat-mode="minimized"/);assert.ok(!chatHTML().includes('floating-chat-form'));await click('floating-chat-maximize');assert.match(chatHTML(),/data-chat-mode="maximized"/);await click('floating-chat-maximize');assert.match(chatHTML(),/data-chat-mode="window"/);await click('chat-room','market');assert.match(chatHTML(),/Negociações de robôs/);assert.equal(location.hash,'#home');assert.equal(elements.get('#app').innerHTML,original);
  await click('chat-room','global');
 });
@@ -132,7 +135,7 @@ test('barra inferior tem Meus robôs e mantém Rede junto aos oito atalhos',()=>
  location.hash='#home';listeners.hashchange();const dock=elements.get('#app').innerHTML.match(/<nav class="bottom-nav game-dock"[\s\S]*?<\/nav>/)[0];assert.match(dock,/href="#robots"/);assert.match(dock,/Meus robôs/);assert.match(dock,/href="#affiliates"/);assert.equal((dock.match(/<a /g)||[]).length,7);assert.equal((dock.match(/data-a="mobile-menu"/g)||[]).length,1);location.hash='#robots';listeners.hashchange();const robotDock=elements.get('#app').innerHTML.match(/<nav class="bottom-nav game-dock"[\s\S]*?<\/nav>/)[0];assert.equal((robotDock.match(/class="active"/g)||[]).length,1);
 });
 test('X fecha o chat sem deixar painel na tela e o atalho da barra superior reabre',async()=>{
- location.hash='#home';listeners.hashchange();assert.match(chatHTML(),/floating-chat-close/);await click('floating-chat-close');assert.equal(chatHTML(),'');assert.match(elements.get('#app').innerHTML,/aria-label="Reabrir chat flutuante"/);await click('floating-chat-open');assert.match(chatHTML(),/floating-chat-form/);
+ location.hash='#home';listeners.hashchange();await click('floating-chat-open');assert.match(chatHTML(),/floating-chat-close/);await click('floating-chat-close');assert.equal(chatHTML(),'');assert.match(elements.get('#app').innerHTML,/aria-label="Reabrir chat flutuante"/);await click('floating-chat-open');assert.match(chatHTML(),/floating-chat-form/);
 });
 test('admin cria conquista com orçamento único e interface mostra mapa e ranking',async()=>{
  location.hash='#admin';listeners.hashchange();await click('admin-event-edit','new');assert.match(modal(),/Conquista cooperativa de territórios/);assert.match(modal(),/name="dailyOrders"/);

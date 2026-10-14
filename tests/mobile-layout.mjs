@@ -7,6 +7,7 @@ import {join,resolve} from 'node:path';
 import {chromium,webkit} from 'playwright';
 import * as C from '../src/core.js';
 import {ensureSocial} from '../src/social-core.js';
+import {defaultConquestRules} from '../src/guild-conquest.js';
 
 const engines=(process.env.MOBILE_BROWSER||'chromium,webkit').split(',');
 const root=resolve(import.meta.dirname,'..'),url='http://127.0.0.1:4179',browsers={},sizes=[{width:320,height:568},{width:375,height:667},{width:390,height:720},{width:430,height:740},{width:667,height:375}];
@@ -20,7 +21,7 @@ before(async()=>{
  console.log('Capturas móveis:',artifacts);
 });
 after(async()=>{for(const browser of Object.values(browsers))await browser.close();server?.kill();});
-function fixture(empty=false){const state=C.initialState();ensureSocial(state);for(const robot of state.robots){const info=C.robotInfo(state,robot);robot.productionDailyMinor=info.daily*100;robot.expiresAt=info.expires;}state.serverAuthoritative=true;state.profile.name='Layout';state.profile.role='admin';state.adminUsers=[];if(empty){state.robots=[];state.selectedRobot=null;state.balances={LC:0,RC:0};}return state;}
+function fixture(empty=false){const state=C.initialState();ensureSocial(state);for(const robot of state.robots){const info=C.robotInfo(state,robot);robot.productionDailyMinor=info.daily*100;robot.expiresAt=info.expires;}state.serverAuthoritative=true;state.profile.name='Layout';state.profile.role='admin';state.adminUsers=[];state.social.events.push({id:'layout-conquest',type:'guild-conquest',name:'Cerco do Vale',description:'Castelos, casas e cabanas.',startsAt:Date.now()-60000,endsAt:Date.now()+C.DAY,enabled:true,scene:'guild-canyon',rewardPoolRC:500,participationRC:0,battleRewardRC:0,conquest:defaultConquestRules()});state.social.guilds[0].members.push({userId:state.profile.id||'demo-self',role:'member',joinedAt:Date.now()});if(empty){state.robots=[];state.selectedRobot=null;state.balances={LC:0,RC:0};}return state;}
 const sdk=`import * as C from '/releases/${release}/core.js';
 const state=window.__mobileFixture,channel={on(){return this},subscribe(){return this}};
 export function createClient(){return {
@@ -61,6 +62,14 @@ for(const engine of engines)for(const size of sizes)test(`${engine}: navegação
    assert.ok((await page.locator('.catalog-card').first().boundingBox()).height<=380,'Card de catálogo excessivo: '+JSON.stringify(await page.locator('.catalog-card').first().evaluate(el=>({height:el.getBoundingClientRect().height,body:[...el.querySelector('.catalog-body').children].map(child=>({name:child.className,height:child.getBoundingClientRect().height,margin:getComputedStyle(child).margin}))}))));
    const cards=await page.locator('.catalog-card').all();const first=await cards[0].boundingBox(),second=await cards[1].boundingBox();assert.ok(Math.abs(first.y-second.y)<=1,'Catálogo não usa duas colunas');
    await page.screenshot({path:join(artifacts,engine+'-'+size.width+'-shop.png')});
+  }
+  if(route==='events'){
+   assert.equal(await page.locator('.territory-node').count(),6);
+   await page.locator('[data-a="conquest-focus"][data-id="cabin-1"]').click();
+   assert.match(await page.locator('.conquest-command h3').textContent(),/Cabana/);
+   for(const button of await page.locator('.conquest-orders button').all())assert.ok((await button.boundingBox()).height>=44,'Ordem sem alvo de toque suficiente');
+   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Mapa gera rolagem horizontal');
+   await page.screenshot({path:join(artifacts,engine+'-'+size.width+'-conquest.png'),fullPage:true});
   }
   if(route==='login')assert.ok(await page.locator('input[name="email"]').evaluate(el=>parseFloat(getComputedStyle(el).fontSize)>=16),'Campo aciona zoom automático do Safari');
  }

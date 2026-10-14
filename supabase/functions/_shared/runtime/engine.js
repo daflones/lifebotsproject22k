@@ -1,5 +1,6 @@
 import * as C from '../../../../src/core.js';
 import * as G from '../../../../src/guilds.js';
+import {conquestOrder,claimConquestReward} from '../../../../src/guild-conquest.js';
 import * as T from '../../../../src/trading.js';
 import * as Chat from '../../../../src/chat.js';
 import * as A from '../../../../src/admin-operations.js';
@@ -109,6 +110,8 @@ function dispatchAction(session,body,now=Date.now()){
  case 'guild_member':if(s.guildBattle&&body.user_id===s.profile.id)throw new Error('Termine o duelo antes de sair da guilda.');result=G.manageMember(s,body.guild_id,body.user_id,body.operation);break;
  case 'guild_level_claim':result=G.claimGuildLevel(s,int(body.level,2,100),now);break;
  case 'guild_event_claim':result=G.claimWarReward(s,body.event_id,now);break;
+ case 'guild_conquest_order':result=conquestOrder(s,body.event_id,body.territory_id,uid,body.move,body.expected_version,now);break;
+ case 'guild_conquest_claim':result=claimConquestReward(s,body.event_id,now);break;
  case 'trade_create':result=T.createListing(s,uid,body.kind,body.price_lc,now);result.robotSnapshot=C.robotInfo(s,{...owned(s,uid),equipment:[]},now);result.sellerName=s.profile.name;break;
  case 'trade_cancel':result=T.cancelListing(s,body.listing_id,now);break;
  case 'trade_accept_sale':{const listing=w.listings.find(l=>l.id===body.listing_id),seller=session.accounts.get(listing?.sellerId);if(seller)C.assertRobotAvailable(seller,listing.robotUid);}result=T.acceptListing(s,body.listing_id,null,now);break;
@@ -121,6 +124,7 @@ function dispatchAction(session,body,now=Date.now()){
  case 'admin_chat_mute':result=Chat.mutePilot(s,body.user_id,int(body.minutes,0,43200),now);break;
  case 'admin_chat_remove':result=Chat.moderateMessage(s,body.message_id);break;
  case 'arena_find_match':case 'guild_find_battle':{
+  if(action==='guild_find_battle'&&G.eventState(s,body.event_id,now)?.type==='guild-conquest')throw new Error('Use o mapa de conquista para este evento.');
   const kind=action==='guild_find_battle'?'guild':'arena',active=w.matches.find(m=>m.status==='active'&&m.players.some(p=>p.userId===s.profile.id));if(active)return {match:matchView(active,s.profile.id)};
   let q=w.queue.find(q=>q.userId===s.profile.id);if(!q){if(kind==='arena')player(s,uid,now);else{const r=owned(s,uid);C.assertRobotAvailable(s,uid);if(!C.robotInfo(s,r,now).active)throw new Error('Robô expirado.');if(!membership(s))throw new Error('Entre numa guilda.');}
    q={id:C.uuid(),userId:s.profile.id,uid,kind,eventId:body.event_id||null,guildId:activeGuild(s,s.profile.id),joinedAt:now,expiresAt:now+90000};w.queue.push(q);s.arenaQueue={id:q.id,uid:q.uid,expiresAt:q.expiresAt};}
@@ -144,6 +148,7 @@ export function changedAccounts(session){const result=[];for(const [id,s] of ses
 export function visibleSnapshot(session){const s=session.state,id=s.profile.id,own=activeGuild(s,id),admin=s.profile.role==='admin',data={...storedState(s),serverAuthoritative:true,mode:session.mode,realMoneyEnabled:session.mode==='real'&&s.settings.realMoneyEnabled===true};for(const key of configKeys)data[key]=s[key];if(!admin)delete data.adminAudit;if(s.arenaQueue?.expiresAt<=Date.now())data.arenaQueue=null;
  data.robots=s.robots.map(r=>{const info=C.robotInfo(s,r),old=r.productionPeriod;let view=r;if(old&&old.daily!==info.daily){const till=Math.min(Date.now(),info.expires);view={...r,lastCollected:till,pendingProductionRC:(r.pendingProductionRC||0)+Math.max(0,till-Math.max(r.lastCollected,r.createdAt))/C.DAY*old.daily};}return {...view,expiresAt:info.expires,productionDailyMinor:info.daily*100};});
  data.social=C.clone(session.world);data.social.messages=data.social.messages.filter(m=>['global','market'].includes(m.room)||m.room==='guild:'+own);data.social.activeGuildBattle=s.guildBattle||null;delete data.social.queue;delete data.social.matches;delete data.social.commissions;delete data.productionDays;data.social.rewardReceipts=data.social.rewardReceipts.filter(r=>admin||r.userId===id);data.social.muted=admin?data.social.muted:{[id]:data.social.muted[id]||0};data.social.guildDaily={[id]:data.social.guildDaily[id]};data.social.chatLastSent={[id]:data.social.chatLastSent[id]};data.social.proposals=data.social.proposals.filter(p=>admin||p.buyerId===id||p.sellerId===id);data.social.trades=data.social.trades.filter(p=>admin||p.buyerId===id||p.sellerId===id);
+ for(const board of Object.values(data.social.conquests||{}))board.pilots=board.pilots[id]?{[id]:board.pilots[id]}:{};
  data.adminAccounts=session.profiles.map(p=>({profile:{id:p.id,name:p.name,referralCode:p.referralCode},robots:[],inventory:[],balances:{LC:0,RC:0}}));
  if(admin)data.adminUsers=[...session.accounts.values()].map(a=>({...storedState(a),profile:{...a.profile}}));
  data.affiliates=[];let parents=new Set([id]);for(let level=1;level<=3;level++){const descendants=session.profiles.filter(p=>parents.has(p.referrerId));for(const p of descendants){const a=session.accounts.get(p.id),robots=a?.robots||[];data.affiliates.push({id:p.id,name:p.name,level,whatsapp:p.shareWhatsApp?p.whatsapp:'',robots:robots.length,robotId:robots[0]?.catalogId,daily:a?robots.reduce((sum,r)=>sum+(C.robotInfo(a,r).active?C.robotInfo(a,r).daily:0),0):0,commission:(s.commissionReceipts||[]).filter(r=>r.affiliateId===p.id).reduce((n,r)=>n+r.amount,0),battles:{played:a?.battles?.length||0,wins:a?.battles?.filter(b=>b.win).length||0},acquisitions:robots.map(r=>({catalogId:r.catalogId,level:r.level,active:C.robotInfo(a,r).active,paidAmount:r.contract?.paidAmount,currency:r.contract?.paidCurrency}))});}parents=new Set(descendants.map(p=>p.id));}

@@ -1,4 +1,5 @@
 /* LifeBots i18n — detecção por IP, escolha manual e tradução do DOM renderizado. */
+import {EXTRA_TABLE} from './i18n-dict.js';
 export const LOCALES=['pt','en','es','ru','ja'];
 export const LOCALE_LABELS={pt:'Português',en:'English',es:'Español',ru:'Русский',ja:'日本語'};
 const LOCALE_TAG={pt:'pt-BR',en:'en',es:'es',ru:'ru',ja:'ja'};
@@ -351,9 +352,97 @@ const TABLE=[
 ['Em breve','Coming soon','Próximamente','Скоро','近日公開'],
 ['hoje','today','hoy','сегодня','今日'],
 ['gratuitas por dia','free per day','gratis por día','бесплатно в день','1日無料'],
+['CONQUISTA DE TERRITÓRIOS','TERRITORY CONQUEST','CONQUISTA DE TERRITORIOS','ЗАХВАТ ТЕРРИТОРИЙ','領土争奪'],
+['Castelo','Castle','Castillo','Замок','城'],
+['Torre','Tower','Torre','Башня','塔'],
+['Casa','House','Casa','Дом','家'],
+['Cabana','Cabin','Cabaña','Хижина','小屋'],
+['Neutro','Neutral','Neutral','Нейтральный','中立'],
+['Mapa de conquista','Conquest map','Mapa de conquista','Карта захвата','領土マップ'],
+['Integridade','Integrity','Integridad','Прочность','耐久値'],
+['Escudo','Shield','Escudo','Щит','シールド'],
+['Energia','Energy','Energía','Энергия','エネルギー'],
+['energia','energy','energía','энергия','エネルギー'],
+['Ordens hoje','Orders today','Órdenes hoy','Приказы сегодня','今日の指令'],
+['Robô','Robot','Robot','Робот','ロボット'],
+['usos','uses','usos','применений','回'],
+['Atacar','Attack','Atacar','Атаковать','攻撃'],
+['Romper defesa','Breach defenses','Romper defensa','Пробить оборону','防御突破'],
+['Reparar','Repair','Reparar','Ремонтировать','修理'],
+['Fortificar','Fortify','Fortificar','Укрепить','強化'],
+['Orçamento total','Total prize budget','Presupuesto total','Общий призовой фонд','賞金総額'],
+['Fim','Ends','Fin','Окончание','終了'],
+['Local','Local','Local','Локально','ローカル'],
+['Sincronização ao vivo','Live sync','Sincronización en vivo','Синхронизация онлайн','リアルタイム同期'],
+['Sincronização periódica','Periodic sync','Sincronización periódica','Периодическая синхронизация','定期同期'],
+['Protegido','Protected','Protegido','Под защитой','保護中'],
+['Defesa em alerta','Defense on alert','Defensa en alerta','Оборона настороже','警戒中'],
+['Disponível','Available','Disponible','Доступно','利用可能'],
+['pts/min','pts/min','pts/min','очк/мин','点/分'],
+['EM DISPUTA','CONTESTED','EN DISPUTA','ИДЁТ БОРЬБА','争奪中'],
+['ENCERRADO','ENDED','FINALIZADO','ЗАВЕРШЕНО','終了'],
+['EM BREVE','UPCOMING','PRÓXIMAMENTE','СКОРО','開催予定'],
+['PAUSADO','PAUSED','PAUSADO','ПРИОСТАНОВЛЕНО','一時停止'],
+['Enviando ordem…','Sending order…','Enviando orden…','Отправка приказа…','指令送信中…'],
+['Próxima ordem em','Next order in','Próxima orden en','Следующий приказ через','次の指令まで'],
+['Proteção restante','Protection remaining','Protección restante','Осталось защиты','保護残り時間'],
+['Cada ordem consome um uso do robô.','Each order consumes one robot use.','Cada orden consume un uso del robot.','Каждый приказ расходует одно применение робота.','各指令でロボットの使用回数を1消費します。'],
+['Entre em uma guilda para participar.','Join a guild to participate.','Únete a un gremio para participar.','Вступите в гильдию для участия.','参加するにはギルドに加入してください。'],
+['Você representa uma única guilda nesta edição.','You represent one guild in this event.','Representas a un solo gremio en esta edición.','В этом событии вы представляете одну гильдию.','このイベントでは1つのギルドのみ代表できます。'],
+['Coordenar no chat','Coordinate in chat','Coordinar en el chat','Координация в чате','チャットで連携'],
+['Como conquistar e receber','Conquest and reward rules','Cómo conquistar y cobrar','Правила захвата и наград','征服と報酬のルール'],
+['Seu prêmio','Your prize','Tu premio','Ваша награда','あなたの報酬'],
+['Recompensa recebida','Reward claimed','Recompensa recibida','Награда получена','受取済み'],
+['Resgatar prêmio','Claim prize','Cobrar premio','Забрать награду','報酬を受け取る'],
+['Domínio das guildas','Guild control','Dominio de gremios','Контроль гильдий','ギルド支配'],
+['Ranking dos pilotos','Pilot ranking','Clasificación de pilotos','Рейтинг пилотов','パイロットランキング'],
+['Minha guilda','My guild','Mi gremio','Моя гильдия','自分のギルド'],
+['Todos','Everyone','Todos','Все','全員'],
+['locais','locations','lugares','объектов','拠点'],
+['pontos','points','puntos','очков','ポイント'],
+['conquistas','captures','conquistas','захватов','占領'],
+['defesa','defense','defensa','защита','防御'],
+['Últimas ordens','Recent orders','Últimas órdenes','Последние приказы','最新の指令'],
+['Conquistado por','Captured by','Conquistado por','Захвачено','占領者'],
+['Nenhuma contribuição ainda.','No contributions yet.','Aún no hay contribuciones.','Вкладов пока нет.','貢献はまだありません。'],
+['Território conquistado!','Territory captured!','¡Territorio conquistado!','Территория захвачена!','領土を獲得！'],
+['Ordem de cerco registrada.','Siege order recorded.','Orden de asedio registrada.','Приказ осады записан.','包囲指令を記録しました。'],
+['Reduz ataques comuns em 20%. Vale 5 pontos por minuto de domínio.','Reduces normal attacks by 20%. Worth 5 points per minute held.','Reduce ataques normales un 20%. Vale 5 puntos por minuto de dominio.','Снижает обычные атаки на 20%. Даёт 5 очков за минуту контроля.','通常攻撃を20%軽減。支配1分につき5ポイント。'],
+['Reduz ataques comuns em 15%. Vale 3 pontos por minuto de domínio.','Reduces normal attacks by 15%. Worth 3 points per minute held.','Reduce ataques normales un 15%. Vale 3 puntos por minuto de dominio.','Снижает обычные атаки на 15%. Даёт 3 очка за минуту контроля.','通常攻撃を15%軽減。支配1分につき3ポイント。'],
+['Reparos 40% mais eficazes. Vale 2 pontos por minuto de domínio.','Repairs are 40% more effective. Worth 2 points per minute held.','Reparaciones un 40% más eficaces. Vale 2 puntos por minuto de dominio.','Ремонт эффективнее на 40%. Даёт 2 очка за минуту контроля.','修理効果が40%増加。支配1分につき2ポイント。'],
+['Sua guilda ganha energia extra nas ordens comuns. Vale 1 ponto por minuto de domínio.','Your guild gains extra energy on normal orders. Worth 1 point per minute held.','Tu gremio gana energía extra en órdenes normales. Vale 1 punto por minuto de dominio.','Обычные приказы дают гильдии дополнительную энергию. Даёт 1 очко за минуту контроля.','通常指令でギルドに追加エネルギー。支配1分につき1ポイント。'],
+['Ataques cooperativos reduzem a defesa. O ataque que esgota a integridade conquista o local para sua guilda. Reparos e escudos ajudam a mantê-lo.','Cooperative attacks weaken defenses. The attack that depletes integrity captures the location for your guild. Repairs and shields help hold it.','Los ataques cooperativos reducen la defensa. El ataque que agota la integridad conquista el lugar para tu gremio. Reparaciones y escudos ayudan a mantenerlo.','Совместные атаки ослабляют оборону. Атака, обнуляющая прочность, захватывает объект для гильдии. Ремонт и щиты помогают его удержать.','協力攻撃で防御を弱めます。耐久値をゼロにした攻撃でギルドが占領します。修理とシールドで維持しましょう。'],
+['Vence o maior tempo de domínio ponderado: castelo 5, torre 3, casa 2 e cabana 1 ponto por minuto. Em empate, vale a ordem do identificador da guilda.','The highest weighted control time wins: castle 5, tower 3, house 2 and cabin 1 point per minute. Ties use guild ID order.','Gana el mayor tiempo de dominio ponderado: castillo 5, torre 3, casa 2 y cabaña 1 punto por minuto. Los empates se resuelven por identificador del gremio.','Побеждает наибольшее взвешенное время контроля: замок 5, башня 3, дом 2, хижина 1 очко в минуту. При равенстве решает порядок ID гильдии.','支配時間の加重点で勝敗決定：城5、塔3、家2、小屋1ポイント/分。同点はギルドID順で決定。'],
+['O orçamento é dividido entre os participantes da guilda vencedora proporcionalmente à contribuição. Valores inteiros, arredondados para baixo. Não há prêmio por ataque nem RC além do orçamento.','The budget is split among the winning guild’s participants in proportion to their contribution, rounded down to whole amounts. No per-attack prizes or RC beyond the budget.','El presupuesto se divide entre los participantes del gremio ganador según su contribución, redondeado hacia abajo. Sin premios por ataque ni RC fuera del presupuesto.','Фонд делится между участниками победившей гильдии пропорционально вкладу, с округлением вниз. Наград за атаку и RC сверх фонда нет.','予算は勝利ギルドの参加者に貢献度で分配し、整数に切り捨てます。攻撃ごとの報酬や予算超過RCはありません。'],
+['Contribuição é o dano ou reparo efetivo. O vínculo à guilda fica fixo nesta edição; o resgate continua disponível após sair.','Contribution is effective damage or repair. Your event guild is locked; rewards remain claimable after leaving.','La contribución es daño o reparación efectiva. El gremio queda fijado en esta edición; puedes cobrar después de salir.','Вклад — реальный урон или ремонт. Гильдия фиксируется на событие; награду можно получить и после выхода.','貢献は実際のダメージや修理量です。イベント中の所属は固定され、脱退後も報酬を受け取れます。'],
+/* Nomes próprios: transliteração para ru/ja, grafia preservada em en/es. */
+['LÚMEN','LÚMEN','LÚMEN','ЛЮМЕН','ルーメン'],
+['BASTIÃO','BASTIÃO','BASTIÃO','БАСТИОН','バスティオン'],
+['KIRA','KIRA','KIRA','КИРА','キラ'],
+['NIVAL','NIVAL','NIVAL','НИВАЛЬ','ニヴァル'],
+['ZÉFIRO','ZÉFIRO','ZÉFIRO','ЗЕФИР','ゼファー'],
+['KEPLER','KEPLER','KEPLER','КЕПЛЕР','ケプラー'],
+['PRISMA','PRISMA','PRISMA','ПРИЗМА','プリズマ'],
+['ÉREBO','ÉREBO','ÉREBO','ЭРЕБУС','エレバス'],
+['CORALLIS','CORALLIS','CORALLIS','КОРАЛЛИС','コーラリス'],
+['NAUTILUS','NAUTILUS','NAUTILUS','НАУТИЛУС','ノーチラス'],
+['TICTON','TICTON','TICTON','ТИКТОН','ティクトン'],
+['VÉSPER','VÉSPER','VÉSPER','ВЕСПЕР','ヴェスパー'],
+['MICÉLIO','MICÉLIO','MICÉLIO','МИЦЕЛИО','ミセリオ'],
+['AURÉLIA','AURÉLIA','AURÉLIA','АУРЕЛИЯ','オーレリア'],
+['BROTTO','BROTTO','BROTTO','БРОТТО','ブロット'],
+['NEXA','NEXA','NEXA','НЕКСА','ネクサ'],
+['LifeBots','LifeBots','LifeBots','LifeBots','LifeBots'],
+['Aurora','Aurora','Aurora','Аврора','オーロラ'],
+['O farol de Aurora voltou a brilhar. Qual setor sua equipe está explorando?','The beacon of Aurora is shining again. Which sector is your squad exploring?','El faro de Aurora volvió a brillar. ¿Qué sector explora tu equipo?','Маяк Авроры снова сияет. Какой сектор исследует твоя команда?','オーロラの灯台が再び輝きました。チームはどのセクターを探索中ですか？'],
+['Sou NEXA, a memória do hangar. Nossos faróis se apagaram há muito tempo. Comece pelos arredores, vença as patrulhas e reúna energia para reacender Aurora.','I am NEXA, the memory of the hangar. Our beacons went dark long ago. Start at the outskirts, defeat the patrols and gather energy to reignite Aurora.','Soy NEXA, la memoria del hangar. Nuestros faros se apagaron hace mucho. Empieza por las afueras, vence a las patrullas y reúne energía para volver a encender Aurora.','Я НЕКСА, память ангара. Наши маяки давно погасли. Начни с окраин, победи патрули и собери энергию, чтобы вновь зажечь Аврору.','私はNEXA、ハンガーの記憶です。私たちの灯台はずっと前に消えました。郊外から始めて、パトロールを倒し、オーロラを再点灯するエネルギーを集めましょう。'],
+['NEXA, sua guia','NEXA, your guide','NEXA, tu guía','НЕКСА, твой гид','NEXA、あなたのガイド'],
+['Chave Pix','Pix key','Clave Pix','Ключ Pix','Pixキー'],
+['Tipo da chave Pix','Pix key type','Tipo de clave Pix','Тип ключа Pix','Pixキーの種類'],
+['CPF/CNPJ do titular','Holder’s CPF/CNPJ','CPF/CNPJ del titular','CPF/CNPJ владельца','名義人のCPF/CNPJ'],
 ];
 const DICT={};
-for(const locale of LOCALES.slice(1)){const i=LOCALES.indexOf(locale);DICT[locale]={};for(const row of TABLE)DICT[locale][row[0]]=row[i];}
+for(const locale of LOCALES.slice(1)){const i=LOCALES.indexOf(locale);DICT[locale]={};for(const row of EXTRA_TABLE)DICT[locale][row[0]]=row[i];for(const row of TABLE)DICT[locale][row[0]]=row[i];}
 let locale='pt',onChange=null;
 export function getLocale(){return locale;}
 export function localeTag(){return LOCALE_TAG[locale]||'pt-BR';}
@@ -397,6 +486,7 @@ export function translateDom(root){
  const walker=doc.createTreeWalker(root,4),nodes=[];let node;
  while(node=walker.nextNode())nodes.push(node);
  for(const text of nodes){
+  if(text.parentElement?.closest('[translate="no"],script,style,textarea,code,pre'))continue;
   const value=text.nodeValue,key=norm(value);if(!key)continue;
   const hit=dict[key];if(!hit)continue;
   text.nodeValue=(value.match(/^\s*/)?.[0]||'')+hit+(value.match(/\s*$/)?.[0]||'');
@@ -405,6 +495,7 @@ export function translateDom(root){
  const targets=root.querySelectorAll?[...root.querySelectorAll(attrs.map(a=>`[${a}]`).join(','))]:[];
  if(root.nodeType===1)targets.unshift(root);
  for(const el of targets)for(const attr of attrs){
+  if(el.closest?.('[translate="no"]'))continue;
   const value=el.getAttribute?.(attr);if(!value)continue;
   const hit=dict[norm(value)];if(hit)el.setAttribute(attr,hit);
  }

@@ -63,6 +63,11 @@ test('translateDom ignora português e ambientes sem DOM',()=>{
  translateDom(null);
  setLocale('en',false);translateDom(null);
 });
+test('textos de conquista existem nos cinco idiomas',()=>{for(const lang of LOCALES.slice(1)){setLocale(lang,false);for(const key of ['CONQUISTA DE TERRITÓRIOS','Ranking dos pilotos','Próxima ordem em','Nenhuma contribuição ainda.'])assert.notEqual(t(key),key,lang+': '+key);}});
+test('translateDom preserva nomes marcados como conteúdo do usuário',()=>{
+ setLocale('en',false);const node={nodeValue:'Entrar',parentElement:{closest:()=>({})}};let used=false;
+ const root={nodeType:1,ownerDocument:{createTreeWalker:()=>({nextNode:()=>used?null:(used=true,node)})},querySelectorAll:()=>[],getAttribute:()=>null};translateDom(root);assert.equal(node.nodeValue,'Entrar');
+});
 test('translateDom traduz nós de texto e atributos',()=>{
  setLocale('en',false);
  const mini={nodeType:1,ownerDocument:null,querySelectorAll:()=>[],getAttribute:()=>null,setAttribute(){}};

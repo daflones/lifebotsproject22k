@@ -5,6 +5,8 @@ import {COMBAT_ASSETS,COMBAT_STYLES,robotCombatProfile} from './combat-profiles.
 import {createFloatingChat} from './floating-chat.js';
 import {successfulActionSound} from './audio-effects.js';
 import {createSocialView} from './social-view.js';
+import {createConquestView} from './conquest-view.js';
+import {conquestOrder,claimConquestReward} from './guild-conquest.js';
 import {createSocialAdmin} from './social-admin.js';
 import {ensureSocial,socialConfig,membership,currentId} from './social-core.js';
 import * as Guild from './guilds.js';
@@ -134,7 +136,9 @@ async function remoteAction(action,payload={}){const reply=await API.action(acti
 async function loadRemote(){const data=(await API.action('snapshot')).data;if(!data?.profile)throw new Error('Não foi possível carregar a conta.');absorbRemote(data);await loadMedia(state.profile.id,API.mediaAdapter());if(state.activeArena&&!combat&&!matchmaking)remoteCombat.start(state.activeArena);}
 async function findGuildBattle(eventId,uid){if(combat||matchmaking)return;const q={id:C.uuid()};matchmaking=q;modal('<h2 id="modal-title">Buscando adversário de outra guilda…</h2>'+btn('Cancelar busca','arena-cancel','','secondary wide'));const search=async()=>{if(matchmaking!==q)return;try{const result=await remoteAction('guild_find_battle',{event_id:eventId,robot_id:uid});if(matchmaking!==q)return;if(result.match){matchmaking=null;remoteCombat.start(result.match);}else setTimeout(search,1000);}catch(e){matchmaking=null;closeModal();toast(e.message,true);}};await search();}
 
-const socialView=createSocialView({getState:()=>state,isDemo:API.isDemo,escape:esc,icon:I,coin,sprite,button:btn,heading,assetUrl,input,textarea,modal,format:n,robotSelector,baseUrl:()=>location.href||location.origin+'/#'+page});
+const conquestUI=createConquestView({getState:()=>state,isDemo:API.isDemo,escape:esc,button:btn,format:n,assetUrl});
+let conquestBusy=false,conquestEpoch=0;
+const socialView=createSocialView({conquests:()=>conquestUI.render(),getState:()=>state,isDemo:API.isDemo,escape:esc,icon:I,coin,sprite,button:btn,heading,assetUrl,input,textarea,modal,format:n,robotSelector,baseUrl:()=>location.href||location.origin+'/#'+page});
 const floatingChat=createFloatingChat({getState:()=>state,getPage:()=>page,view:socialView,escape:esc,icon:I});
 const socialAdmin=createSocialAdmin({getState:()=>state,isDemo:API.isDemo,escape:esc,input,textarea,button:btn,icon:I,assetUrl,modal,mutate});
 const equipmentView=createEquipmentView({core:C,getState:()=>state,escape:esc,icon:I,button:btn,partArt,modal});
@@ -160,6 +164,18 @@ document.addEventListener('click',async event=>{const target=event.target.closes
  case 'floating-chat-maximize':floatingChat.maximize();break;
  case 'chat-room':floatingChat.setRoom(id);if(page==='chat')render();break;
  case 'preview-sound':if(!audio.preferences.enabled){const enabled=await audio.toggle();if(!enabled){toast('O áudio não está disponível neste navegador.',true);break;}}await audio.unlock();audio.play(id);break;
+ case 'conquest-event':conquestUI.setEvent(id);conquestUI.refresh();break;
+ case 'conquest-focus':conquestUI.focus(id);conquestUI.refresh();break;
+ case 'conquest-ranking':conquestUI.toggleRanking();conquestUI.refresh();break;
+ case 'conquest-order':{
+  if(conquestBusy)break;conquestBusy=true;conquestEpoch++;conquestUI.setBusy(true);
+  const eventId=target.dataset.event,move=target.dataset.move,version=Number(target.dataset.version),uid=selected()?.uid;
+  try{await mutate(s=>conquestOrder(s,eventId,id,uid,move,version),result=>result.captured?'Território conquistado!':'Ordem de cerco registrada.',{action:'guild_conquest_order',payload:{event_id:eventId,territory_id:id,robot_id:uid,move,expected_version:version}},{keepGame:true});}finally{conquestEpoch++;conquestBusy=false;conquestUI.setBusy(false);if(!API.isDemo)void refreshLive();}break;
+ }
+ case 'conquest-claim':{
+  if(conquestBusy)break;conquestBusy=true;conquestEpoch++;conquestUI.setBusy(true);
+  try{await mutate(s=>claimConquestReward(s,id),'Recompensa do evento resgatada.',{action:'guild_conquest_claim',payload:{event_id:id}},{keepGame:true});}finally{conquestEpoch++;conquestBusy=false;conquestUI.setBusy(false);render();}break;
+ }
  case 'guild-create':socialView.createGuildForm();break;
  case 'guild-roster':socialView.roster(id);break;
  case 'guild-join':await mutate(s=>Guild.joinGuild(s,id,target.dataset.inviter||null),'Você entrou na guilda.',{action:'guild_join',payload:{guild_id:id,inviter_id:target.dataset.inviter||null,inviter_code:target.dataset.inviteCode||null}});break;
@@ -279,7 +295,7 @@ adminTab=id;render();break;
  case 'notifications':await audio.unlock();audio.play('notification');state.seenAnnouncementVersion=state.settings.announcementVersion||0;save();modal(`<span class="eyebrow">TRANSMISSÃO DO HANGAR</span><h2 id="modal-title">${esc(state.settings.announcement)}</h2>${state.settings.announcementImage?`<img class="announcement-img" src="${esc(safeUrl(state.settings.announcementImage))}" alt="Aviso do hangar">`:''}<p>${esc(state.settings.announcementBody)}</p><a class="btn primary wide" href="${esc(safeUrl(state.settings.announcementLink))}" data-a="close">${esc(state.settings.announcementButton)} ${I('arrow')}</a>`);break;
  case 'install':if(installPrompt){await installPrompt.prompt();installPrompt=null;}else confirmModal('Leve seu hangar com você.','No iPhone: Safari → Compartilhar → Adicionar à Tela de Início. No Android: menu do navegador → Instalar aplicativo / Adicionar à tela inicial.','Entendido','close');break;
 }}catch(e){toast(e.message,true);}});
-document.addEventListener('change',e=>{void mediaAdmin.change(e.target);if(e.target.name==='waveCount')contentAdmin.syncWaves(e.target.closest('form'));if(e.target.id==='robot-selector'){state.selectedRobot=e.target.value;save();if(!$('#modal-root').innerHTML)render();}if(e.target.closest('#convert-form'))updateQuote();});
+document.addEventListener('change',e=>{if(e.target.id==='conquest-robot'){state.selectedRobot=e.target.value;save();conquestUI.refresh();return;}void mediaAdmin.change(e.target);if(e.target.name==='waveCount')contentAdmin.syncWaves(e.target.closest('form'));if(e.target.id==='robot-selector'){state.selectedRobot=e.target.value;save();if(!$('#modal-root').innerHTML)render();}if(e.target.closest('#convert-form'))updateQuote();});
 document.addEventListener('input',e=>{if(e.target.closest('#floating-chat-form'))floatingChat.setDraft(e.target.value);if(e.target.closest('#money-form,#convert-form'))updateQuote();});
 document.addEventListener('submit',async e=>{e.preventDefault();void audio.unlock();const f=e.target,fd=new FormData(f),v=Object.fromEntries(fd);try{if(await socialAdmin.submit(f,v)||await adminOperations.submit(f,v)||await contentAdmin.submit(f,v))return;switch(f.id){
  case 'floating-chat-form':case 'chat-form':{const sent=await mutate(s=>sendMessage(s,f.dataset.room,v.message),'',{action:'chat_send',payload:{room:f.dataset.room,message:v.message}},{keepGame:f.id==='floating-chat-form'});if(sent&&f.id==='floating-chat-form')floatingChat.clearDraft(f.dataset.room);break;}
@@ -321,7 +337,17 @@ if('serviceWorker'in navigator&&['http:','https:'].includes(location.protocol)){
 async function copyInvitation(value){if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(value);toast('Convite copiado.');}else modal(`<h2 id="modal-title">Seu convite</h2><p>Selecione e copie o código ou link abaixo.</p><input class="manual-copy" readonly value="${esc(value)}">`);}
 function scrollMapFocus(){requestAnimationFrame(()=>{const node=$('.journey-node.focused');node?.scrollIntoView?.({behavior:'smooth',block:'nearest',inline:'center'});});}
 
-let liveUnsubscribe,liveRefreshTimer;
-async function startLiveUpdates(){if(API.isDemo||liveUnsubscribe)return;liveUnsubscribe=await API.subscribeUpdates(()=>{clearTimeout(liveRefreshTimer);liveRefreshTimer=setTimeout(async()=>{try{absorbRemote((await API.action('snapshot')).data);floatingChat.refresh();if(!combat&&!matchmaking&&!$('#modal-root').innerHTML)render();}catch{}},400);});}
+let liveUnsubscribe,liveRefreshTimer,liveRefreshing=false,liveQueued=false;
+async function refreshLive(){
+ if(API.isDemo||document.hidden||conquestBusy||!remoteLoaded)return;
+ if(liveRefreshing){liveQueued=true;return;}liveRefreshing=true;const epoch=conquestEpoch;
+ try{const data=(await API.action('snapshot')).data;if(epoch!==conquestEpoch)return;absorbRemote(data);for(const [selector,value] of [['.rc-chip b',state.balances.RC],['.lc-chip b',state.balances.LC]]){const node=$(selector);if(node)node.textContent=n(value);}floatingChat.refresh();conquestUI.synced();if(!combat&&!matchmaking&&!$('#modal-root').innerHTML&&!$('[data-conquest-root]'))render();}catch{conquestUI.setStatus('CHANNEL_ERROR');}finally{liveRefreshing=false;if(liveQueued){liveQueued=false;scheduleLiveRefresh();}}
+}
+function scheduleLiveRefresh(){if(liveRefreshTimer)return;liveRefreshTimer=setTimeout(()=>{liveRefreshTimer=null;void refreshLive();},400);}
+async function startLiveUpdates(){if(API.isDemo||liveUnsubscribe)return;liveUnsubscribe=await API.subscribeUpdates(scheduleLiveRefresh,status=>conquestUI.setStatus(status));}
+setInterval(()=>{if(!conquestBusy&&['guilds','events'].includes(page)&&!$('#modal-root').innerHTML)conquestUI.refresh();},1000);
+setInterval(()=>{if(['guilds','events'].includes(page))void refreshLive();},15000);
+window.addEventListener('online',()=>void refreshLive());
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)void refreshLive();});
 if(API.isDemo)void loadMedia('demo').then(()=>{render();audio.refresh();}).catch(e=>toast(e.message,true));
 if(!API.isDemo)void API.onRecovery(()=>modal(`<div class="modal-emblem">${I('shield')}</div><h2 id="modal-title">Uma nova senha para seu piloto.</h2><form id="password-recovery-form">${input('Nova senha','password','','password','minlength="10" required autocomplete="new-password"')}${input('Confirmar senha','confirm','','password','minlength="10" required autocomplete="new-password"')}<button type="submit" class="btn primary wide">Salvar nova senha</button></form>`));

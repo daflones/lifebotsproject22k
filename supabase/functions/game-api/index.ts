@@ -11,7 +11,7 @@ const pendingActions = new Set([
   "buy_robot", "buy_part", "buy_equip_part", "equip", "upgrade_robot", "upgrade_part", "collect", "convert",
   "deposit", "withdraw", "tutorial", "story", "battle", "pass", "admin_save",
   "admin_users", "admin_user_detail", "admin_adjust_balance", "admin_update_robot", "admin_review_withdrawal", "admin_deposits", "admin_withdrawals", "admin_publish_notice",
-  "social_snapshot", "chat_send", "guild_create", "guild_join", "guild_member", "guild_find_battle", "guild_move", "guild_finish", "guild_level_claim", "guild_event_claim",
+  "guild_conquest_order", "guild_conquest_claim", "social_snapshot", "chat_send", "guild_create", "guild_join", "guild_member", "guild_find_battle", "guild_move", "guild_finish", "guild_level_claim", "guild_event_claim",
   "trade_create", "trade_cancel", "trade_accept_sale", "trade_propose", "trade_review",
   "admin_social_settings", "admin_guild_event_save", "admin_chat_mute", "admin_chat_remove", "admin_guilds", "admin_trades", "admin_chat_messages",
   "arena_find_match", "arena_cancel_match", "arena_poll_match", "arena_move", "arena_finish",

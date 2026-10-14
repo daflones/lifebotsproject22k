@@ -11,6 +11,7 @@ globalThis.localStorage={getItem:k=>data.get(k)||null,setItem:(k,v)=>data.set(k,
 Object.defineProperty(globalThis,'navigator',{value:{},configurable:true});
 globalThis.setInterval=()=>0;globalThis.setTimeout=fn=>{fn();return 0;};
 globalThis.FormData=class{constructor(form){this.entriesValue=Object.entries(form.fields||{});}*[Symbol.iterator](){yield* this.entriesValue;}getAll(k){return this.entriesValue.filter(x=>x[0]===k).map(x=>x[1]);}};
+data.set('lifebots-lang','pt');
 await import('../src/app.js');
 const html=()=>elements.get('#app').innerHTML+elements.get('#chat-root').innerHTML;
 const chatHTML=()=>elements.get('#chat-root').innerHTML;
@@ -132,4 +133,10 @@ test('barra inferior tem Meus robôs e mantém Rede junto aos oito atalhos',()=>
 });
 test('X fecha o chat sem deixar painel na tela e o atalho da barra superior reabre',async()=>{
  location.hash='#home';listeners.hashchange();assert.match(chatHTML(),/floating-chat-close/);await click('floating-chat-close');assert.equal(chatHTML(),'');assert.match(elements.get('#app').innerHTML,/aria-label="Reabrir chat flutuante"/);await click('floating-chat-open');assert.match(chatHTML(),/floating-chat-form/);
+});
+test('admin cria conquista com orçamento único e interface mostra mapa e ranking',async()=>{
+ location.hash='#admin';listeners.hashchange();await click('admin-event-edit','new');assert.match(modal(),/Conquista cooperativa de territórios/);assert.match(modal(),/name="dailyOrders"/);
+ await listeners.submit({preventDefault(){},target:{id:'admin-event-form',dataset:{id:'new'},fields:{name:'Cerco <Norte>',description:'<img src=x onerror=alert(1)>',type:'guild-conquest',startsAt:new Date().toISOString(),durationDays:'7',scene:'guild-canyon',enabled:'on',rewardPoolRC:'1000',participationRC:'999',battleRewardRC:'999',castle:'1',tower:'1',house:'2',cabin:'2',cooldownSeconds:'20',protectionSeconds:'120',dailyOrders:'60'}}});
+ const state=JSON.parse(data.get('liferobots-demo-v1')),event=state.social.events.find(e=>e.type==='guild-conquest');assert.ok(event);assert.equal(event.participationRC,0);assert.equal(event.battleRewardRC,0);assert.equal(event.rewardPoolRC,1000);
+ location.hash='#events';listeners.hashchange();assert.match(html(),/data-conquest-root/);assert.match(html(),/Ranking dos pilotos/);assert.equal((html().match(/class="territory-node/g)||[]).length,6);assert.match(html(),/Cerco &lt;Norte&gt;/);assert.ok(!html().includes('<img src=x onerror=alert(1)>'));
 });

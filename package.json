@@ -18,7 +18,8 @@
     "verify:package": "node scripts/verify-package.mjs",
     "verify:deploy": "node scripts/verify-deploy.mjs",
     "mobile:android": "npm run build && npx cap sync android",
-    "mobile:ios": "npm run build && npx cap sync ios"
+    "mobile:ios": "npm run build && npx cap sync ios",
+    "simulate:chat": "node scripts/simulate-chat.mjs"
   },
   "devDependencies": {
     "playwright": "1.56.1"

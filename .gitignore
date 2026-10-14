@@ -12,3 +12,4 @@ ios/
 .backend-secrets
 *.zip
 *.tar.gz
+.chat-sim-pilots.json

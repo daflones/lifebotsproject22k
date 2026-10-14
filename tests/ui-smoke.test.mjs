@@ -143,9 +143,15 @@ test('admin cria conquista com orçamento único e interface mostra mapa e ranki
  const state=JSON.parse(data.get('liferobots-demo-v1')),event=state.social.events.find(e=>e.type==='guild-conquest');assert.ok(event);assert.equal(event.participationRC,0);assert.equal(event.battleRewardRC,0);assert.equal(event.rewardPoolRC,1000);
  location.hash='#events';listeners.hashchange();assert.match(html(),/data-conquest-root/);assert.match(html(),/Ranking dos pilotos/);assert.equal((html().match(/class="territory-node/g)||[]).length,6);assert.match(html(),/Cerco &lt;Norte&gt;/);assert.ok(!html().includes('<img src=x onerror=alert(1)>'));
 });
-test('botão flutuante do WhatsApp usa o link configurado e a carteira tem área de resgate',()=>{
- location.hash='#home';listeners.hashchange();assert.match(html(),/whatsapp-fab/);assert.match(html(),/chat\.whatsapp\.com\/KiXwUlykgJX1mmlnEwh1Ia/);
- location.hash='#wallet';listeners.hashchange();assert.match(html(),/coupon-form/);assert.match(html(),/Resgatar cupom/);
+test('botão flutuante do WhatsApp abre modal da comunidade com imagem, texto e link',async()=>{
+ location.hash='#home';listeners.hashchange();assert.match(html(),/whatsapp-fab/);assert.match(html(),/data-a="whatsapp-community"/);
+ await click('whatsapp-community');assert.match(modal(),/chat\.whatsapp\.com\/KiXwUlykgJX1mmlnEwh1Ia/);assert.match(modal(),/community-art/);assert.match(modal(),/community-emblem\.png/);assert.match(modal(),/Entrar no grupo/);
+ await click('close');
+});
+test('barra superior tem botão de cupom que abre o resgate',async()=>{
+ location.hash='#home';listeners.hashchange();assert.match(html(),/data-a="coupon-open"/);
+ await click('coupon-open');assert.match(modal(),/coupon-form/);assert.match(modal(),/Resgatar cupom/);await click('close');
+ location.hash='#wallet';listeners.hashchange();assert.match(html(),/coupon-form/);
 });
 test('admin cria cupom no painel e o piloto resgata o prêmio na carteira',async()=>{
  location.hash='#admin';listeners.hashchange();assert.match(html(),/Cupons/);

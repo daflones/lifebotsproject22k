@@ -478,6 +478,8 @@ const TABLE=[
 ['Resgatar','Redeem','Canjear','Погасить','引き換える'],
 ['Cupons resgatados','Redeemed coupons','Cupones canjeados','Погашенные купоны','使用済みクーポン'],
 ['Cupons','Coupons','Cupones','Купоны','クーポン'],
+['Cupom','Coupon','Cupón','Купон','クーポン'],
+['Entrar no grupo','Join the group','Entrar al grupo','Войти в группу','グループに入る'],
 ['Cupons de resgate','Redemption coupons','Cupones de canje','Купоны на погашение','引換クーポン'],
 ['Novo cupom','New coupon','Nuevo cupón','Новый купон','新しいクーポン'],
 ['Editar cupom','Edit coupon','Editar cupón','Редактировать купон','クーポンを編集'],

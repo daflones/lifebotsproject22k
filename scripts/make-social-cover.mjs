@@ -1,0 +1,11 @@
+import{chromium}from'playwright';
+import{resolve}from'node:path';
+const root=resolve(import.meta.dirname,'..');
+const launchOptions={channel:process.env.MOBILE_CHROMIUM_CHANNEL||'chrome',headless:true};
+const browser=await chromium.launch(launchOptions);
+const page=await browser.newPage({viewport:{width:1200,height:630}});
+await page.goto('file:///'+resolve(root,'scripts/social-cover.html').replaceAll('\\','/'));
+await page.waitForTimeout(1200);
+await page.screenshot({path:resolve(root,'dist/assets/social-cover.png')});
+await browser.close();
+console.log('social-cover.png gerado (1200x630)');

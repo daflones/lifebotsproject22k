@@ -461,8 +461,11 @@ async function detectByIp(){
  }
  return null;
 }
+function urlLocale(){try{const code=new URLSearchParams(globalThis.location?.search||'').get('lang');return LOCALES.includes(code)?code:null;}catch{return null;}}
 export function initI18n(callback){
  onChange=callback||null;
+ const fromUrl=urlLocale();
+ if(fromUrl){locale=fromUrl;store(LANG_KEY,fromUrl);applyLocale();return;}
  const manual=read(LANG_KEY);
  if(LOCALES.includes(manual)){locale=manual;applyLocale();return;}
  const cachedGeo=read(GEO_KEY);

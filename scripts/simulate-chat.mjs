@@ -20,7 +20,7 @@
 // Os pilotos provisionados ficam em cache em .chat-sim-pilots.json (não comitado).
 
 import {readFileSync,writeFileSync,existsSync} from 'node:fs';
-import {randomUUID} from 'node:crypto';
+import {randomUUID,createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {dirname,join} from 'node:path';
 
@@ -35,7 +35,7 @@ const args=Object.fromEntries(process.argv.slice(2).filter(a=>a.startsWith('--')
 const num=(k,d)=>{const v=args[k];if(v==null||v===true)return d;const n=Number(v);return Number.isFinite(n)?n:d;};
 const dur=(k,d)=>{const v=args[k];if(v==null||v===true)return d;const m=String(v).match(/^(\d+(?:\.\d+)?)(s|m|h)?$/);if(!m)return d;return Math.round(Number(m[1])*({s:1000,m:60000,h:3600000}[m[2]||'s']));};
 
-const OPT={players:num('players',100),min:dur('min',25000),max:dur('max',90000),gap:dur('gap',15000),threads:num('threads',4),count:num('count',0),mode:String(args.mode||'real'),once:!!args.once,dry:!!args.dry,purge:!!args.purge};
+const OPT={players:num('players',100),min:dur('min',25000),max:dur('max',90000),gap:dur('gap',15000),threads:num('threads',4),count:num('count',0),mode:String(args.mode||'real'),once:!!args.once,dry:!!args.dry,purge:!!args.purge,rename:!!args.rename};
 const URL_BASE=(process.env.SUPABASE_URL||'').replace(/\/+$/,'');
 const SERVICE_KEY=process.env.SUPABASE_SERVICE_ROLE_KEY||'';
 if(!OPT.dry&&(!URL_BASE||!SERVICE_KEY)){console.error('Defina SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY (env ou .env).');process.exit(1);}
@@ -49,10 +49,20 @@ const ri=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 const rnd=()=>Math.random().toString(36).slice(2,10);
 const log=(...a)=>console.log(new Date().toLocaleTimeString('pt-BR'),...a);
 
-// ---------- pilotos simulados ----------
-const NAME_A=['Vortex','Nova','Kira','Zephyr','Orion','Atlas','Lyra','Raven','Pixel','Turbo','Nebula','Cosmo','Stellar','Boreal','Falcao','Onix','Jato','Vetor','Lumen','Sigma','Echo','Draco','Cometa','Fenix','Titan','Axel','Blaze','Cronos','Duna','Ember','Flux','Glit','Hidra','Ion','Jade','Krypto','Lobo','Magma','Nitro','Orbe','Prisma','Quasar','Rocket','Sable','Toro','Ultra','Vega','Wolf','Xeno','Zion'];
-const NAME_B=['_BR','77','X','_RP','99','_MG','_PR','3000','_SP','_RJ','Zero','Pro','_GO','42','_SC','_BA','_CE','_RS','_AM','_PE'];
-function makeNames(n){const out=new Set();while(out.size<n){let s=pick(NAME_A)+pick(NAME_B);if(Math.random()<0.35)s+=pick(NAME_B);out.add('Piloto '+s);}return [...out];}
+// ---------- pilotos simulados (nomes humanizados — estilo usernames BR reais) ----------
+const FIRST=['Lucas','Gabriel','Pedro','Matheus','Rafael','Bruno','Thiago','Felipe','Gustavo','Diego','Vinicius','Joao','Arthur','Enzo','Nicolas','Davi','Miguel','Eduardo','Henrique','Caio','Leonardo','Vitor','Daniel','Marcos','Andre','Igor','Rodrigo','Samuel','Fernando','Erick','Ana','Maria','Julia','Beatriz','Larissa','Camila','Fernanda','Amanda','Leticia','Gabriela','Mariana','Isabela','Carolina','Sophia','Alice','Laura','Manuela','Helena','Valentina','Bianca','Yasmin','Clara','Vitoria','Natalia','Bruna','Renata','Paula','Carlos','Jorge','Marcelo','Paulo','Ricardo','Sergio','Alex','Roberto','Antonio','Francisco','Wesley','Adriano','Cristian','Wallace','Jefferson','Maicon','Leandro','Otavio','Caua','Kauan','Ryan','Breno','Heitor','Luan','Kaique','Everton','Fabio','Guilherme','Jonathan','Julio','Renan','Thales','Murilo','Danilo','Douglas','Alan','Wesley','Caique','Emanuel','Bryan'];
+const LAST=['Silva','Santos','Oliveira','Souza','Costa','Pereira','Ferreira','Almeida','Ribeiro','Carvalho','Gomes','Martins','Rocha','Lima','Araujo','Cardoso','Barbosa','Nunes','Moreira','Teixeira','Fernandes','Vieira','Cavalcante','Dias','Freitas','Ramos','Melo','Correia','Moraes','Pinto'];
+const DIMF=['inho','inha','zinho','zinha','ito','ita','zika','Boy','Girl','Gamer','plays','_play','_br','_ff','_yt','.xz','_rp','Oficial'];
+function makeName(){const r=Math.random(),f=pick(FIRST),l=pick(LAST);
+ if(r<.30)return `${f} ${l}`;
+ if(r<.45)return `${f}${l}${Math.random()<.4?ri(2,99):''}`;
+ if(r<.58)return `${f}${pick(DIMF)}`;
+ if(r<.68)return `${f}${ri(10,999)}`;
+ if(r<.76)return `xX ${f} Xx`;
+ if(r<.84)return `${f.toLowerCase()}.${l.toLowerCase()}`;
+ if(r<.92)return `${f} ${pick(['Jr','Neto','Filho','da Silva','Santos'])}`;
+ return `${pick(['Sr.','Dona','Pro','Rei','Mestre','Cap.'])} ${f}`;}
+function makeNames(n){const out=new Set();while(out.size<n)out.add(makeName());return [...out];}
 
 async function provision(n){
  let cache=[];if(existsSync(CACHE_FILE)){try{cache=JSON.parse(readFileSync(CACHE_FILE,'utf8'));}catch{}}
@@ -61,11 +71,11 @@ async function provision(n){
  for(let i=pilots.length;i<n;i++){
   const email=`sim.pilot.${String(i+1).padStart(3,'0')}@lifebots-sim.test`,name=names[i];
   let id=null;
-  const created=await authAdmin('admin/users',{method:'POST',body:JSON.stringify({email,password:'Sim-'+rnd()+rnd()+'!A9',email_confirm:true,user_metadata:{simulated:true,display_name:name}})});
+  // O trigger lr_handle_signup cria lr_profiles + carteiras automaticamente.
+  const created=await authAdmin('admin/users',{method:'POST',body:JSON.stringify({email,password:'Sim-'+rnd()+rnd()+'!A9',email_confirm:true,user_metadata:{simulated:true,name}})});
   if(created.ok)id=created.body.id;
   else{for(let page=1;page<=20&&!id;page++){const list=await authAdmin(`admin/users?page=${page}&per_page=200`);const u=(list.body?.users||[]).find(u=>u.email===email);if(u)id=u.id;if(!list.body?.users?.length)break;}}
   if(!id)throw new Error('Não foi possível provisionar '+email+': '+JSON.stringify(created.body));
-  await rest('lr_profiles',{method:'POST',headers:{Prefer:'resolution=ignore-duplicates'},body:JSON.stringify({id,display_name:name})});
   pilots.push({id,name});if(i%10===9)log('pilotos provisionados:',i+1,'/',n);
   await sleep(120);
  }
@@ -111,36 +121,57 @@ const MARKET=[
 ];
 function resolve(text,ctx){return text.replace(/\{(\w+)\}/g,(_,k)=>{if(ctx[k]!=null)return String(ctx[k]);const gen={robot:pick(ROBOTS),robot2:pick(ROBOTS),lc:lc(),lc2:lc(),lc3:lc(),rc:rc(),lv:lv(),pilot:pick(ctx.pilots).name};ctx[k]=gen[k];return String(gen[k]??k);});}
 
-// ---------- escrita no backend ----------
-async function loadWorld(){const rows=await rest(`lr_game_world?mode=eq.${OPT.mode}&select=revision,state`);if(!rows?.length)throw new Error('Mundo '+OPT.mode+' não encontrado.');return rows[0];}
+// ---------- escrita no backend (caminho oficial do engine: load → commit) ----------
+async function rpc(name,body){const r=await fetch(`${URL_BASE}/rest/v1/rpc/${name}`,{method:'POST',headers:H,body:JSON.stringify(body)});const t=await r.text();let data=null;try{data=JSON.parse(t);}catch{}if(!r.ok){const e=new Error(`${name} → ${r.status} ${data?.message||t}`);e.status=r.status;e.body=t;throw e;}return data;}
 async function commit(entry){
- for(let attempt=0;attempt<6;attempt++){
-  const {revision,state}=await loadWorld();
-  state.messages=state.messages||[];state.messages.unshift(entry);
+ for(let attempt=0;attempt<8;attempt++){
+  const loaded=await rpc('lr_engine_load',{p_actor:entry.authorId,p_extra_ids:[],p_mode:OPT.mode});
+  const world=loaded.world,state=world.data||{};state.messages=state.messages||[];
+  state.messages.unshift(entry);
   for(const room of ['global','market']){const list=state.messages.filter(m=>m.room===room);if(list.length>150){const drop=new Set(list.slice(150).map(m=>m.id));state.messages=state.messages.filter(m=>!drop.has(m.id));}}
-  const r=await fetch(`${URL_BASE}/rest/v1/lr_game_world?mode=eq.${OPT.mode}&revision=eq.${revision}`,{method:'PATCH',headers:{...H,Prefer:'return=representation'},body:JSON.stringify({revision:revision+1,state,updated_at:new Date().toISOString()})});
-  const rows=r.ok?await r.json():null;
-  if(!r.ok||!rows?.length){await sleep(400+attempt*500);continue;} // conflito de revisão → tenta de novo
-  // realtime: replica para lr_live_chat (o commit do engine sincroniza a mesma tabela)
-  await rest('lr_live_chat',{method:'POST',headers:{Prefer:'resolution=ignore-duplicates'},body:JSON.stringify({id:entry.id,mode:OPT.mode,room:entry.room,author_id:entry.authorId,display_name:entry.name,message:entry.text,created_at:new Date(entry.at).toISOString()})});
-  await rest('lr_game_signals',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({mode:OPT.mode,kind:'chat'})});
-  return;
+  const hash=createHash('sha256').update(JSON.stringify({action:'chat_send',room:entry.room,message:entry.text})).digest('hex');
+  const response={ok:true,data:{result:entry}};
+  try{
+   await rpc('lr_engine_commit',{p_actor:entry.authorId,p_mode:OPT.mode,p_world_revision:world.revision,p_world:state,p_accounts:[],p_key:'sim-'+randomUUID(),p_hash:hash,p_action:'chat_send',p_response:response});
+   return; // o RPC já sincroniza lr_live_chat e emite sinal realtime
+  }catch(e){if(e.body?.includes('REVISION_CONFLICT')||e.body?.includes('IDEMPOTENCY_CONFLICT')){await sleep(300+attempt*400);continue;}throw e;}
  }
  throw new Error('Não consegui gravar a mensagem após várias tentativas.');
 }
 async function purgeSimulated(){
  const pilots=existsSync(CACHE_FILE)?JSON.parse(readFileSync(CACHE_FILE,'utf8')):[];
- const {revision,state}=await loadWorld();const before=(state.messages||[]).length;
+ if(!pilots.length)throw new Error('Sem cache de pilotos para usar como ator.');
+ const loaded=await rpc('lr_engine_load',{p_actor:pilots[0].id,p_extra_ids:[],p_mode:OPT.mode});
+ const world=loaded.world,state=world.data||{};const before=(state.messages||[]).length;
  state.messages=(state.messages||[]).filter(m=>!m.simulated);
- const r=await fetch(`${URL_BASE}/rest/v1/lr_game_world?mode=eq.${OPT.mode}&revision=eq.${revision}`,{method:'PATCH',headers:{...H,Prefer:'return=minimal'},body:JSON.stringify({revision:revision+1,state,updated_at:new Date().toISOString()})});
- if(!r.ok)throw new Error('purge → '+r.status);
- if(pilots.length){const ids=pilots.map(p=>p.id).join(',');await rest(`lr_live_chat?mode=eq.${OPT.mode}&author_id=in.(${ids})`,{method:'DELETE'});}
- log('removidas',before-(state.messages||[]).length,'mensagens simuladas.');
+ // commit sem mensagens simuladas → o RPC também apaga essas linhas de lr_live_chat
+ await rpc('lr_engine_commit',{p_actor:pilots[0].id,p_mode:OPT.mode,p_world_revision:world.revision,p_world:state,p_accounts:[],p_key:'sim-purge-'+randomUUID(),p_hash:createHash('sha256').update('purge').digest('hex'),p_action:'chat_purge',p_response:{ok:true,data:{removed:before-state.messages.length}}});
+ log('removidas',before-state.messages.length,'mensagens simuladas.');
+}
+
+// renomeia pilotos já provisionados: atualiza lr_profiles via commit 'profile' do engine
+async function renamePilots(){
+ if(!existsSync(CACHE_FILE))throw new Error('Sem cache de pilotos.');
+ const pilots=JSON.parse(readFileSync(CACHE_FILE,'utf8')),names=makeNames(pilots.length);
+ for(let i=0;i<pilots.length;i++){
+  const p=pilots[i],loaded=await rpc('lr_engine_load',{p_actor:p.id,p_extra_ids:[],p_mode:OPT.mode});
+  const acct=(loaded.accounts||[]).find(a=>a.userId===p.id);
+  if(!acct){log('conta não encontrada para',p.name,'— pulando');continue;}
+  const data={...acct.data,profile:{...(acct.data.profile||{}),name:names[i]}};
+  for(let attempt=0;attempt<5;attempt++){
+   try{await rpc('lr_engine_commit',{p_actor:p.id,p_mode:OPT.mode,p_world_revision:loaded.world.revision,p_world:loaded.world.data,p_accounts:[{userId:p.id,revision:acct.revision,data}],p_key:'sim-rename-'+randomUUID(),p_hash:createHash('sha256').update('rename'+p.id).digest('hex'),p_action:'profile',p_response:{ok:true,data:{renamed:names[i]}}});break;}
+   catch(e){if(e.body?.includes('REVISION_CONFLICT')){const rl=await rpc('lr_engine_load',{p_actor:p.id,p_extra_ids:[],p_mode:OPT.mode});Object.assign(loaded,{world:rl.world});acct.revision=rl.accounts.find(a=>a.userId===p.id)?.revision;continue;}throw e;}
+  }
+  p.name=names[i];log('renomeado →',p.name);
+ }
+ writeFileSync(CACHE_FILE,JSON.stringify(pilots,null,1));
+ log('cache atualizado:',pilots.length,'pilotos.');
 }
 
 // ---------- motor de conversa ----------
 async function main(){
  if(OPT.purge){await purgeSimulated();return;}
+ if(OPT.rename){await renamePilots();return;}
  const pilots=OPT.dry?makeNames(OPT.players).map((name,i)=>({id:'00000000-0000-4000-8000-'+String(i).padStart(12,'0'),name})):await provision(OPT.players);
  log(pilots.length,'pilotos simulados prontos.');
  if(OPT.once&&!OPT.count)OPT.count=1;
